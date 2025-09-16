@@ -31,6 +31,7 @@ jobs:
 
       - name: Run instrumentation tests
         run: |
+          ./mill show JetNews.app.androidApk
           ./mill show JetNews.app.createAndroidVirtualDevice
           ./mill show JetNews.app.startAndroidEmulator
           ./mill show JetNews.app.androidTest
