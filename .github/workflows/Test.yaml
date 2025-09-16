@@ -30,7 +30,7 @@ jobs:
           distribution: 'zulu'
 
       - name: Run instrumentation tests
-        run:
+        run: |
           ./mill show JetNews.app.createAndroidVirtualDevice
           ./mill show JetNews.app.startAndroidEmulator
           ./mill show JetNews.app.androidTest
