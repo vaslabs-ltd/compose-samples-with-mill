@@ -36,5 +36,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-reports-jetnews-${{ matrix.api-level }}
-          path: ${{ env.SAMPLE_PATH }}/out/app/androidTest/testForked.dest/test-report.xml
+          name: test-reports-jetnews
+          path: JetNews/out/app/androidTest/testForked.dest/test-report.xml
