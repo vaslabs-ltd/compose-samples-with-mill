@@ -1,0 +1,25 @@
+package build
+import mill.*, androidlib.*, kotlinlib.*
+
+object Versions {
+  val kotlinVersion = "2.1.20"
+
+  val androidCompileSdk = 33
+  val androidMinSdk = 21
+}
+
+// Create and configure an Android SDK module to manage Android SDK paths and tools.
+object androidSdkModule0 extends AndroidSdkModule {
+  def buildToolsVersion = "35.0.0"
+}
+
+trait BaseAndroidModule extends AndroidAppKotlinModule {
+  def kotlinVersion = Versions.kotlinVersion
+
+  def androidSdkModule = mill.api.ModuleRef(androidSdkModule0)
+
+  def androidCompileSdk = Versions.androidCompileSdk
+
+  def androidMinSdk = Versions.androidMinSdk
+
+}
