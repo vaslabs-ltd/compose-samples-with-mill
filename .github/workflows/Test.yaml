@@ -15,8 +15,9 @@ jobs:
         uses: actions/checkout@v5
       - name: Set Env variables
         run: |
-          echo "ANDROID_HOME=$HOME/Android/" >> $GITHUB_ENV
-          echo "ANDROID_SDK_HOME=$HOME/Android" >> $GITHUB_ENV
+          echo "ANDROID_HOME=$HOME/.android/sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$HOME/.android/sdk" >> $GITHUB_ENV
+          echo "ANDROID_USER_HOME=$HOME/.android/" >> $GITHUB_ENV
         shell: bash
       - name: Enable KVM group perms
         run: |
