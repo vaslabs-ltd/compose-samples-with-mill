@@ -33,7 +33,7 @@ jobs:
         run: |
           ./mill show JetNews.app.androidApk
           ./mill show JetNews.app.createAndroidVirtualDevice
-          ./mill show JetNews.app.startAndroidEmulator
+          ./mill --debug show JetNews.app.startAndroidEmulator
           ./mill show JetNews.app.androidTest
           ./mill show JetNews.app.stopAndroidEmulator
 
