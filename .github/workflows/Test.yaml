@@ -41,8 +41,7 @@ jobs:
         shell: bash
 
       - name: Upload test reports
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-reports-jetnews
-          path: JetNews/out/app/androidTest/testForked.dest/test-report.xml
+          path: out/JetNews/app/androidTest/testForked.dest/test-report.xml
