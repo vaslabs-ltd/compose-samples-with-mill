@@ -1,4 +1,4 @@
-//| mill-version: 1.0.4
+//| mill-version: 1.0.5
 package build
 import mill.*, androidlib.*, kotlinlib.*
 
