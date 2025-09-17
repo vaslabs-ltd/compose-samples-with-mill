@@ -16,7 +16,7 @@ jobs:
       - name: Set Env variables
         run: |
           echo "ANDROID_HOME=$HOME/Android/" >> $GITHUB_ENV
-          echo "ANDROID_SDK_ROOT=$HOME/Android" >> $GITHUB_ENV
+          echo "ANDROID_SDK_HOME=$HOME/Android" >> $GITHUB_ENV
         shell: bash
       - name: Enable KVM group perms
         run: |
@@ -37,6 +37,7 @@ jobs:
           ./mill --debug show JetNews.app.startAndroidEmulator
           ./mill show JetNews.app.androidTest
           ./mill show JetNews.app.stopAndroidEmulator
+        shell: bash
 
       - name: Upload test reports
         if: always()
