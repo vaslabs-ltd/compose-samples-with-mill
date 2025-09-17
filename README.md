@@ -1,3 +1,5 @@
+This is a copy of [android/compose-samples](https://github.com/android/compose-samples) but using Mill to build the examples. Porting every example is a work in progress.
+
 # Jetpack Compose Samples
 <img src="readme/samples_montage.gif" alt="Jetpack Compose Samples" width="824" />
 
