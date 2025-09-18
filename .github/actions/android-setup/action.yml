@@ -1,18 +1,22 @@
+inputs:
+  app-name:
+    description: 'The name of the Android app to test, e.g., JetNews or JetLagged'
+    required: true
+
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v4
-    - uses: coursier/cache-action@v6
-    - name: Set Env variables
+    - name: Run instrumentation tests
       run: |
-        echo "ANDROID_HOME=$HOME/.android/sdk" >> $GITHUB_ENV
-        echo "ANDROID_SDK_ROOT=$HOME/.android/sdk" >> $GITHUB_ENV
-        echo "ANDROID_USER_HOME=$HOME/.android/" >> $GITHUB_ENV
+        ./mill show ${{ inputs.app-name }}.app.androidApk
+        ./mill show ${{ inputs.app-name }}.app.createAndroidVirtualDevice
+        ./mill --debug show ${{ inputs.app-name }}.app.startAndroidEmulator
+        ./mill show ${{ inputs.app-name }}.app.androidTest
+        ./mill show ${{ inputs.app-name }}.app.stopAndroidEmulator
       shell: bash
 
-    - name: Enable KVM group perms
-      run: |
-        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-        sudo udevadm control --reload-rules
-        sudo udevadm trigger --name-match=kvm
-      shell: bash
+    - name: Upload test reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-reports-jetnews
+        path: out/${{ inputs.app-name }}/app/androidTest/testForked.dest/test-report.xml
