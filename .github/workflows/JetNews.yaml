@@ -1,0 +1,28 @@
+name: Test JetNews
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  androidTest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: ./.github/actions/android-setup
+      - name: Run instrumentation tests
+        run: |
+          ./mill show JetNews.app.androidApk
+          ./mill show JetNews.app.createAndroidVirtualDevice
+          ./mill --debug show JetNews.app.startAndroidEmulator
+          ./mill show JetNews.app.androidTest
+          ./mill show JetNews.app.stopAndroidEmulator
+        shell: bash
+
+      - name: Upload test reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-jetnews
+          path: out/JetNews/app/androidTest/testForked.dest/test-report.xml
