@@ -14,9 +14,3 @@ runs:
         ./mill show ${{ inputs.app-name }}.app.androidTest
         ./mill show ${{ inputs.app-name }}.app.stopAndroidEmulator
       shell: bash
-
-    - name: Upload test reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-reports-jetnews
-        path: out/${{ inputs.app-name }}/app/androidTest/testForked.dest/test-report.xml
