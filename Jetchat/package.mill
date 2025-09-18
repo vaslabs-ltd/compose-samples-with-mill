@@ -1,0 +1,93 @@
+package build.Jetchat
+
+import mill.*
+import androidlib.*
+import kotlinlib.*
+import build.*
+import mill.javalib.api.JvmWorkerApi
+import mill.kotlinlib.ksp.KspModule
+
+import java.nio.file.Files
+
+object app extends BaseAndroidModule with JvmWorkerModule {
+
+  override def androidApplicationNamespace: String = "com.example.compose.jetchat"
+
+  override def androidApplicationId: String = "com.example.compose.jetchat"
+
+  override def bomMvnDeps: T[Seq[Dep]] = Seq(
+    mvn"androidx.compose:compose-bom:2025.08.00"
+  )
+
+  override def androidEnableCompose: T[Boolean] = true
+
+  override def kotlinUseEmbeddableCompiler: Task[Boolean] = Task {
+    true
+  }
+
+  def databindingJavacOptions: T[Seq[String]] = Task {
+    val scratch = Task.dest / "db-scratch"
+    os.makeDir.all(scratch)
+    val dbProcess = Task.dest / "db-process"
+    Seq(
+      "-processorpath", viewBindingClasspath().map(_.path).mkString(":"),
+      "-processor", "android.databinding.annotationprocessor.ProcessDataBinding",
+      s"-Aandroid.databinding.bindingBuildFolder=${scratch}",
+      s"-Aandroid.databinding.layoutInfoDir=${dbProcess}",
+      s"-Aandroid.databinding.sdkDir=${androidSdkModule().androidSdk().sdkPath}",
+      s"-Aandroid.databinding.modulePackage=${androidApplicationNamespace}",
+      "-Aandroid.databinding.useAndroidX=true",
+      "-Aandroid.databinding.enableV2=true",
+      "-Aandroid.databinding.artifactType=APPLICATION",
+      "-Aandroid.databinding.minApi=21"
+    )
+  }
+  
+  def generateViewBindingSources = Task {
+    val jvmWorkerApi: JvmWorkerApi = jvmWorker().worker()
+    jvmWorkerApi.compileJava(
+      sources = allJavaSourceFiles(),
+      classpath = compileClasspath() ++ viewBindingClasspath(),
+      javacOptions = Seq(
+        "-source", "1.8",
+        "-target", "1.8"
+      ) ++ databindingJavacOptions(),
+      dest = Task.dest / "gen-src" / "viewbinding",
+      upstreamCompileOutput = None
+    )
+  }
+
+  def viewBindingClasspath: T[Seq[PathRef]] = Task {
+    defaultResolver().classpath(
+      Seq(mvn"androidx.databinding:databinding-compiler:8.13.0")
+    )
+  }
+
+  override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
+    mvn"androidx.glance:glance-appwidget:1.1.1",
+    mvn"androidx.glance:glance-material3:1.1.1",
+    mvn"org.jetbrains.kotlin:kotlin-stdlib-jdk8:${build.Versions.kotlinVersion}",
+    mvn"org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2",
+    mvn"androidx.activity:activity-compose:1.10.1",
+    mvn"androidx.core:core-ktx:1.16.0",
+    mvn"androidx.appcompat:appcompat:1.7.0",
+    mvn"androidx.compose.runtime:runtime-livedata",
+    mvn"androidx.lifecycle:lifecycle-viewmodel-compose:2.9.0",
+    mvn"androidx.lifecycle:lifecycle-runtime-compose:2.9.0",
+    mvn"androidx.lifecycle:lifecycle-livedata:2.9.0",
+    mvn"androidx.navigation:navigation-fragment-ktx:2.9.0",
+    mvn"androidx.navigation:navigation-ui-ktx:2.9.0",
+    mvn"androidx.compose.material3:material3",
+    mvn"androidx.compose.material:material-icons-extended",
+    mvn"androidx.compose.ui:ui-util",
+    mvn"androidx.compose.ui:ui-viewbinding",
+    mvn"androidx.compose.ui:ui-text-google-fonts",
+
+
+  )
+
+
+  object androidTest extends AndroidAppKotlinInstrumentedTests {
+
+  }
+}
