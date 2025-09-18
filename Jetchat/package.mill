@@ -9,7 +9,7 @@ import mill.kotlinlib.ksp.KspModule
 
 import java.nio.file.Files
 
-object app extends BaseAndroidModule with JvmWorkerModule {
+object app extends BaseAndroidModule, JvmWorkerModule, AndroidViewBindingModule {
 
   override def androidApplicationNamespace: String = "com.example.compose.jetchat"
 
@@ -23,44 +23,6 @@ object app extends BaseAndroidModule with JvmWorkerModule {
 
   override def kotlinUseEmbeddableCompiler: Task[Boolean] = Task {
     true
-  }
-
-  def databindingJavacOptions: T[Seq[String]] = Task {
-    val scratch = Task.dest / "db-scratch"
-    os.makeDir.all(scratch)
-    val dbProcess = Task.dest / "db-process"
-    Seq(
-      "-processorpath", viewBindingClasspath().map(_.path).mkString(":"),
-      "-processor", "android.databinding.annotationprocessor.ProcessDataBinding",
-      s"-Aandroid.databinding.bindingBuildFolder=${scratch}",
-      s"-Aandroid.databinding.layoutInfoDir=${dbProcess}",
-      s"-Aandroid.databinding.sdkDir=${androidSdkModule().androidSdk().sdkPath}",
-      s"-Aandroid.databinding.modulePackage=${androidApplicationNamespace}",
-      "-Aandroid.databinding.useAndroidX=true",
-      "-Aandroid.databinding.enableV2=true",
-      "-Aandroid.databinding.artifactType=APPLICATION",
-      "-Aandroid.databinding.minApi=21"
-    )
-  }
-  
-  def generateViewBindingSources = Task {
-    val jvmWorkerApi: JvmWorkerApi = jvmWorker().worker()
-    jvmWorkerApi.compileJava(
-      sources = allJavaSourceFiles(),
-      classpath = compileClasspath() ++ viewBindingClasspath(),
-      javacOptions = Seq(
-        "-source", "1.8",
-        "-target", "1.8"
-      ) ++ databindingJavacOptions(),
-      dest = Task.dest / "gen-src" / "viewbinding",
-      upstreamCompileOutput = None
-    )
-  }
-
-  def viewBindingClasspath: T[Seq[PathRef]] = Task {
-    defaultResolver().classpath(
-      Seq(mvn"androidx.databinding:databinding-compiler:8.13.0")
-    )
   }
 
   override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
