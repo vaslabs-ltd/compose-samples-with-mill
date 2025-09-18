@@ -1,0 +1,82 @@
+package build.Jetsnack
+
+import mill.*
+import androidlib.*
+import kotlinlib.*
+import build.*
+import mill.javalib.Dep
+
+object app extends BaseAndroidModule, AndroidR8AppModule {
+
+  override def androidEnableCompose: T[Boolean] = Task { true }
+
+  override def kotlinUseEmbeddableCompiler: T[Boolean] = true
+
+  def androidProjectProguardFiles = Task.Sources(
+    "proguard-rules.pro"
+  )
+
+  override def androidApplicationNamespace: String = "com.example.jetsnack"
+
+  override def androidApplicationId: String = "com.example.jetsnack"
+
+  override def bomMvnDeps: T[Seq[Dep]] = super.bomMvnDeps() ++ Seq(
+    mvn"androidx.compose:compose-bom:2025.08.00"
+  )
+
+  override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
+    mvn"org.jetbrains.kotlin:kotlin-stdlib-jdk8:${build.Versions.kotlinVersion}",
+    mvn"org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2",
+    mvn"androidx.core:core-ktx:1.17.0",
+    mvn"androidx.activity:activity-compose:1.10.1",
+    mvn"androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.2",
+    mvn"androidx.lifecycle:lifecycle-viewmodel-compose:2.9.3",
+    mvn"androidx.lifecycle:lifecycle-runtime-compose:2.9.3",
+    mvn"androidx.navigation:navigation-compose:2.9.2",
+    mvn"androidx.constraintlayout:constraintlayout-compose:1.1.1",
+    mvn"androidx.compose.runtime:runtime",
+    mvn"androidx.compose.foundation:foundation",
+    mvn"androidx.compose.foundation:foundation-layout",
+    mvn"androidx.compose.ui:ui",
+    mvn"androidx.compose.ui:ui-util",
+    mvn"androidx.compose.material3:material3",
+    mvn"androidx.compose.animation:animation",
+    mvn"androidx.compose.material:material-icons-extended",
+    mvn"androidx.compose.ui:ui-tooling-preview",
+    mvn"io.coil-kt:coil-compose:2.7.0",
+    mvn"androidx.compose.ui:ui-tooling",
+    mvn"androidx.glance:glance-appwidget:1.2.0-alpha01",
+    mvn"androidx.glance:glance-preview:1.1.1",
+    mvn"androidx.savedstate:savedstate-ktx:1.3.1"
+  )
+
+  object androidTest extends AndroidAppKotlinInstrumentedTests, AndroidR8AppModule {
+
+    override def androidEnableCompose: T[Boolean] = Task {
+      true
+    }
+
+    override def kotlinUseEmbeddableCompiler: T[Boolean] = true
+
+    override def androidR8Args: T[Seq[String]] = super.androidR8Args() ++ Seq(
+      "--map-diagnostics", "error", "warning"
+    )
+
+    override def bomMvnDeps: T[Seq[Dep]] = super.bomMvnDeps() ++ Seq(
+      mvn"androidx.compose:compose-bom:2025.08.00"
+    )
+
+    override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
+      mvn"junit:junit:4.13.2",
+      mvn"androidx.test:core:1.7.0",
+      mvn"androidx.test.ext:junit:1.3.0",
+      mvn"androidx.test:runner:1.7.0",
+      mvn"androidx.test.espresso:espresso-core:3.7.0",
+      mvn"androidx.test:rules:1.7.0",
+      mvn"org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2",
+      mvn"androidx.compose.ui:ui-test",
+      mvn"androidx.compose.ui:ui-test-junit4",
+    )
+
+  }
+}
