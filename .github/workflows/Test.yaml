@@ -13,6 +13,7 @@ jobs:
     steps:
       - uses: coursier/cache-action@v6
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/android-setup
       - uses: ./.github/actions/mill-android-test
         with:
           app-name: JetLagged
