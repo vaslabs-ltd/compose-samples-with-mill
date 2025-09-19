@@ -9,7 +9,7 @@ import mill.kotlinlib.ksp.KspModule
 
 import java.nio.file.Files
 
-object app extends BaseAndroidModule, JvmWorkerModule, AndroidViewBindingModule {
+object app extends BaseAndroidModule, JvmWorkerModule, AndroidDataBindingModule {
 
   override def androidApplicationNamespace: String = "com.example.compose.jetchat"
 
@@ -24,6 +24,8 @@ object app extends BaseAndroidModule, JvmWorkerModule, AndroidViewBindingModule 
   override def kotlinUseEmbeddableCompiler: Task[Boolean] = Task {
     true
   }
+
+  override def enableViewBinding = true
 
   override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
     mvn"androidx.glance:glance-appwidget:1.1.1",
@@ -44,8 +46,9 @@ object app extends BaseAndroidModule, JvmWorkerModule, AndroidViewBindingModule 
     mvn"androidx.compose.ui:ui-util",
     mvn"androidx.compose.ui:ui-viewbinding",
     mvn"androidx.compose.ui:ui-text-google-fonts",
-
-
+    mvn"androidx.databinding:viewbinding:8.13.0",
+    mvn"androidx.compose.ui:ui-tooling",
+    mvn"androidx.compose.ui:ui-tooling-preview",
   )
 
 
