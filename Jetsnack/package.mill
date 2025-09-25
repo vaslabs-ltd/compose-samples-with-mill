@@ -16,6 +16,32 @@ object app extends BaseAndroidModule, AndroidR8AppModule {
     "proguard-rules.pro"
   )
 
+  override def androidDefaultProguardFileNames: Task[Seq[String]] = Task.Anon {
+    Seq("proguard-android-optimize.txt")
+  }
+
+  def androidReleaseKeyName: Option[String] = Some("releaseKey.jks")
+
+  def androidReleaseKeyAlias: T[Option[String]] = Task {
+    Some("releaseKey")
+  }
+
+  def androidReleaseKeyPass: T[Option[String]] = Task {
+    Some("MillBuildTool")
+  }
+
+  def androidReleaseKeyStorePass: T[Option[String]] = Task {
+    Some("MillBuildTool")
+  }
+
+  override def androidIsDebug: T[Boolean] = Task { false }
+
+  override def androidReleaseSettings: T[AndroidBuildTypeSettings] = Task {
+    AndroidBuildTypeSettings(
+      isMinifyEnabled = true
+    )
+  }
+
   override def androidApplicationNamespace: String = "com.example.jetsnack"
 
   override def androidApplicationId: String = "com.example.jetsnack"
@@ -43,7 +69,6 @@ object app extends BaseAndroidModule, AndroidR8AppModule {
     mvn"androidx.compose.animation:animation",
     mvn"androidx.compose.ui:ui-tooling-preview",
     mvn"io.coil-kt:coil-compose:2.7.0",
-    mvn"androidx.compose.ui:ui-tooling",
     mvn"androidx.glance:glance-appwidget:1.2.0-alpha01",
     mvn"androidx.glance:glance-preview:1.1.1",
     mvn"androidx.savedstate:savedstate-ktx:1.3.1"
