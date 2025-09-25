@@ -38,9 +38,11 @@ object app extends BaseAndroidModule, AndroidR8AppModule {
 
   override def androidReleaseSettings: T[AndroidBuildTypeSettings] = Task {
     AndroidBuildTypeSettings(
-      isMinifyEnabled = true
+      isMinifyEnabled = true,
+      isShrinkEnabled = true
     )
   }
+  
 
   override def androidApplicationNamespace: String = "com.example.jetsnack"
 

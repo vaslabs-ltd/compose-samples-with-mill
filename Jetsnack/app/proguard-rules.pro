@@ -36,3 +36,5 @@
 -dontobfuscate
 
 -keep class androidx.compose.ui.platform.AndroidCompositionLocals_androidKt { *; }
+
+-keep class com.example.jetsnack.**
