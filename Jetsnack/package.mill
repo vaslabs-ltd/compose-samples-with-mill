@@ -16,9 +16,9 @@ object app extends BaseAndroidModule, AndroidR8AppModule {
     "proguard-rules.pro"
   )
 
-//  override def androidDefaultProguardFileNames: Task[Seq[String]] = Task.Anon {
-//    Seq("proguard-android-optimize.txt")
-//  }
+  override def androidDefaultProguardFileNames: Task[Seq[String]] = Task.Anon {
+    Seq("proguard-android-optimize.txt")
+  }
 
   def androidReleaseKeyName: Option[String] = Some("releaseKey.jks")
 
