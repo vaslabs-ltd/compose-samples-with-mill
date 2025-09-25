@@ -41,7 +41,6 @@ object app extends BaseAndroidModule, AndroidR8AppModule {
     mvn"androidx.compose.ui:ui-util",
     mvn"androidx.compose.material3:material3",
     mvn"androidx.compose.animation:animation",
-    mvn"androidx.compose.material:material-icons-extended",
     mvn"androidx.compose.ui:ui-tooling-preview",
     mvn"io.coil-kt:coil-compose:2.7.0",
     mvn"androidx.compose.ui:ui-tooling",
