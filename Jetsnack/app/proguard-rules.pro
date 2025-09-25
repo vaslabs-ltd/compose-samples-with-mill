@@ -33,7 +33,6 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLParameters
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
--dontobfuscate
 
 -keep class androidx.compose.ui.platform.AndroidCompositionLocals_androidKt { *; }
 
