@@ -23,6 +23,9 @@ jobs:
       - uses: ./.github/actions/mill-android-test
         with:
           app-name: Jetsnack
+      - uses: ./.github/actions/mill-android-test
+        with:
+          app-name: Jetchat
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v5
         if: (!cancelled())
