@@ -94,7 +94,10 @@ object app extends BaseAndroidModule, AndroidR8AppModule {
       mvn"org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2",
       mvn"androidx.compose.ui:ui-test",
       mvn"androidx.compose.ui:ui-test-junit4",
-      mvn"androidx.collection:collection-ktx:1.5.0"
+      mvn"androidx.collection:collection-ktx:1.5.0",
+
+      // Resolve conflicts
+      mvn"androidx.savedstate:savedstate-ktx:1.3.0"
     )
 
   }
