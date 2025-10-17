@@ -9,8 +9,7 @@ object app extends BaseAndroidModule, AndroidR8AppModule {
 
   override def androidDebugSettings: T[AndroidBuildTypeSettings] = Task {
     AndroidBuildTypeSettings(
-      isMinifyEnabled = false,
-      isShrinkEnabled = false
+      isMinifyEnabled = false
     )
   }
 
