@@ -39,3 +39,7 @@ proguard-project.txt
 #Mill
 out/
 .bsp
+
+# Vscode
+.vscode/
+.metals/
