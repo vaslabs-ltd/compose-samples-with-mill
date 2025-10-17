@@ -9,7 +9,7 @@ import mill.kotlinlib.ksp.KspModule
 
 import java.nio.file.Files
 
-object app extends BaseAndroidModule, JvmWorkerModule, AndroidViewBindingModule {
+object app extends BaseAndroidModule, AndroidR8AppModule {
 
   override def androidApplicationNamespace: String = "com.example.compose.jetchat"
 
@@ -19,13 +19,29 @@ object app extends BaseAndroidModule, JvmWorkerModule, AndroidViewBindingModule 
     mvn"androidx.compose:compose-bom:2025.08.00"
   )
 
+  override def androidDebugSettings: T[AndroidBuildTypeSettings] = Task {
+    AndroidBuildTypeSettings(
+      isMinifyEnabled = false
+    )
+  }
+  def androidProjectProguardFiles = Task.Sources(
+    "proguard-rules.pro"
+  )
+  def androidDefaultProguardFileNames: Task[Seq[String]] = Task.Anon {
+    Seq("proguard-android-optimize.txt")
+  }
+
   override def androidEnableCompose: T[Boolean] = true
+
+  override def androidEnableViewBinding = true
+
+  override def androidDataBindingCompilerVersion = "8.13.0"
 
   override def kotlinUseEmbeddableCompiler: Task[Boolean] = Task {
     true
   }
 
-  override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
+  override def mvnDeps = super.mvnDeps() ++ Seq(
     mvn"androidx.glance:glance-appwidget:1.1.1",
     mvn"androidx.glance:glance-material3:1.1.1",
     mvn"org.jetbrains.kotlin:kotlin-stdlib-jdk8:${build.Versions.kotlinVersion}",
@@ -44,12 +60,42 @@ object app extends BaseAndroidModule, JvmWorkerModule, AndroidViewBindingModule 
     mvn"androidx.compose.ui:ui-util",
     mvn"androidx.compose.ui:ui-viewbinding",
     mvn"androidx.compose.ui:ui-text-google-fonts",
-
-
+    mvn"androidx.databinding:viewbinding:8.13.0",
+    mvn"androidx.compose.ui:ui-tooling",
+    mvn"androidx.compose.ui:ui-tooling-preview",
+    mvn"androidx.compose.ui:ui-test-manifest",
+    mvn"com.google.android.material:material:1.6.0"
   )
 
 
-  object androidTest extends AndroidAppKotlinInstrumentedTests {
+  object androidTest extends AndroidAppKotlinInstrumentedTests, AndroidR8AppModule {
+    override def bomMvnDeps = super.mvnDeps() ++ Seq(
+      mvn"androidx.compose:compose-bom:2025.08.00"
+    )
+
+    // TODO consider defaulting this to the parent app value
+    override def androidEnableCompose = true
+
+    // TODO consider defaulting this to the parent app value
+    override def kotlinUseEmbeddableCompiler: Task[Boolean] = Task {
+      true
+    }
+
+    // FIXME: R8 should compile without missing classes errors
+    override def androidR8Args = Seq("--map-diagnostics", "error", "warning")
+
+    def mvnDeps = super.mvnDeps() ++ Seq(
+      mvn"junit:junit:4.13.2",
+      mvn"androidx.test:core:1.6.1",
+      mvn"androidx.test:runner:1.6.1",
+      mvn"androidx.test.espresso:espresso-core:3.6.1",
+      mvn"androidx.test:rules:1.6.1",
+      mvn"androidx.test.ext:junit:1.2.1",
+      mvn"org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2",
+      mvn"androidx.compose.ui:ui-test",
+      mvn"androidx.compose.ui:ui-test-junit4",
+      mvn"androidx.collection:collection-ktx:1.5.0"
+    )
 
   }
 }
