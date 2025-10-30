@@ -97,7 +97,9 @@ object app extends BaseAndroidModule, AndroidR8AppModule {
       mvn"androidx.collection:collection-ktx:1.5.0",
 
       // Resolve conflicts
-      mvn"androidx.savedstate:savedstate-ktx:1.3.0"
+      mvn"androidx.savedstate:savedstate-ktx:1.3.0",
+      mvn"androidx.appcompat:appcompat:1.7.0",
+      mvn"androidx.lifecycle:lifecycle-viewmodel-compose:2.9.0"
     )
 
   }
