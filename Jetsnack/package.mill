@@ -50,7 +50,7 @@ object app extends BaseAndroidModule, AndroidR8AppModule {
     mvn"androidx.savedstate:savedstate-ktx:1.3.1"
   )
 
-  object androidTest extends AndroidAppKotlinInstrumentedTests, AndroidR8AppModule {
+  object androidTest extends AndroidAppKotlinInstrumentedTests, AndroidR8InstrumentedTestsModule {
 
     override def androidEnableCompose: T[Boolean] = Task {
       true
@@ -75,10 +75,7 @@ object app extends BaseAndroidModule, AndroidR8AppModule {
       mvn"androidx.test:rules:1.7.0",
       mvn"org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2",
       mvn"androidx.compose.ui:ui-test",
-      mvn"androidx.compose.ui:ui-test-junit4",
-
-      // Resolve conflicts
-      mvn"androidx.savedstate:savedstate-ktx:1.3.0"
+      mvn"androidx.compose.ui:ui-test-junit4"
     )
 
   }
