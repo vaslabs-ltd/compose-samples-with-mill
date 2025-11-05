@@ -35,3 +35,22 @@ jobs:
           annotate_only: true
           require_tests: false
           report_paths: 'out/**/test-report.xml'
+  android-run-app:
+    name: Android Tests (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [ Reply ]
+        include:
+          - app: Reply
+            app-activity: com.example.reply.ui.MainActivity
+    steps:
+      - uses: coursier/cache-action@v6
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/android-setup
+      - uses: ./.github/actions/mill-android-run-apps
+        with:
+          app-name: ${{ matrix.app }}
+          app-activity: ${{ matrix.app-activity }}
