@@ -82,8 +82,7 @@ object app extends BaseAndroidModule, AndroidR8AppModule {
   }
 
 
-  object androidTest extends AndroidAppKotlinInstrumentedTests
-  , AndroidR8AppModule {
+  object androidTest extends AndroidAppKotlinInstrumentedTests, AndroidR8InstrumentedTestsModule {
 
     def bomMvnDeps = super.mvnDeps() ++ Seq(
       mvn"androidx.compose:compose-bom:2025.05.00"
