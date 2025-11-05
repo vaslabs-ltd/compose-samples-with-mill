@@ -9,8 +9,8 @@ runs:
     - name: Run instrumentation tests
       run: |
         ./mill show ${{ inputs.app-name }}.app.androidApk
-        [ -d "${{ inputs.app-name }}/app/androidTest" ] && ./mill show ${{ inputs.app-name }}.app.createAndroidVirtualDevice
-        [ -d "${{ inputs.app-name }}/app/androidTest" ] && ./mill --debug show ${{ inputs.app-name }}.app.startAndroidEmulator
-        [ -d "${{ inputs.app-name }}/app/androidTest" ] && ./mill show ${{ inputs.app-name }}.app.androidTest
-        [ -d "${{ inputs.app-name }}/app/androidTest" ] && ./mill show ${{ inputs.app-name }}.app.stopAndroidEmulator
+        ./mill show ${{ inputs.app-name }}.app.createAndroidVirtualDevice
+        ./mill --debug show ${{ inputs.app-name }}.app.startAndroidEmulator
+        ./mill show ${{ inputs.app-name }}.app.androidTest
+        ./mill show ${{ inputs.app-name }}.app.stopAndroidEmulator
       shell: bash
