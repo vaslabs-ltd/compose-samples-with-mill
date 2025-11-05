@@ -1,0 +1,93 @@
+package build.Reply
+
+import build.*
+
+import mill.*, androidlib.*, kotlinlib.*
+import coursier.core.VariantSelector.VariantMatcher
+import coursier.params.ResolutionParams
+
+object app extends BaseAndroidModule, AndroidR8AppModule {
+
+  def androidIsDebug = true
+
+  override def androidEnableCompose: T[Boolean] = true
+
+  override def kotlinUseEmbeddableCompiler: T[Boolean] = true
+
+  override def androidDebugSettings: T[AndroidBuildTypeSettings] = Task {
+    AndroidBuildTypeSettings(
+      isMinifyEnabled = false
+    )
+  }
+
+  def androidProjectProguardFiles = Task.Sources(
+    "proguard-rules.pro"
+  )
+
+  override def kotlincPluginMvnDeps: T[Seq[Dep]] = super.kotlincPluginMvnDeps() ++ Seq(
+    mvn"org.jetbrains.kotlin:kotlin-serialization-compiler-plugin:${kotlinVersion()}"
+    )
+
+  def androidDefaultProguardFileNames: Task[Seq[String]] = Task.Anon {
+    Seq("proguard-android-optimize.txt")
+  }
+
+  override def androidApplicationNamespace = "com.example.reply"
+
+  override def androidApplicationId = "com.example.reply"
+
+  override def kotlincOptions = super.kotlincOptions() ++ Seq(
+    "-jvm-target",
+    "17"
+  )
+
+  def bomMvnDeps = super.mvnDeps() ++ Seq(
+    mvn"androidx.compose:compose-bom:2025.08.00"
+  )
+
+  def debugDeps: T[Seq[Dep]] = Task {
+    if (androidIsDebug())
+      Seq(
+        mvn"androidx.compose.ui:ui-tooling",
+        mvn"androidx.compose.ui:ui-test-manifest"
+      )
+    else
+      Seq.empty
+  }
+
+  override def resolutionParams: Task[ResolutionParams] = Task.Anon {
+    val buildTypeAttr = if (androidIsDebug())
+      "debug"
+    else
+      "release"
+    super.resolutionParams().addVariantAttributes(
+      "com.android.build.api.attributes.BuildTypeAttr" ->
+        VariantMatcher.AnyOf(Seq(
+          VariantMatcher.Equals(buildTypeAttr)
+        )),
+      "com.android.build.api.attributes.VariantAttr" ->
+        VariantMatcher.AnyOf(Seq(
+          VariantMatcher.Equals(buildTypeAttr)
+        ))
+    )
+  }
+
+  override def mvnDeps = super.mvnDeps() ++ Seq(
+    mvn"androidx.core:core-ktx:1.17.0",
+    mvn"org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion()}",
+    mvn"org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2",
+    mvn"org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0",
+    mvn"androidx.compose.ui:ui-tooling-preview",
+    mvn"androidx.compose.material3:material3",
+    mvn"androidx.compose.material3:material3-adaptive-navigation-suite",
+    mvn"com.google.accompanist:accompanist-adaptive:0.26.2-beta",
+    mvn"androidx.compose.material3:material3-window-size-class",
+    mvn"androidx.lifecycle:lifecycle-runtime-ktx:2.9.2",
+    mvn"androidx.lifecycle:lifecycle-viewmodel-compose:2.9.2",
+    mvn"androidx.lifecycle:lifecycle-runtime-compose:2.9.2",
+    mvn"androidx.navigation:navigation-compose:2.9.3",
+    mvn"androidx.activity:activity-compose:1.10.1",
+    mvn"androidx.window:window:1.4.0",
+    mvn"androidx.savedstate:savedstate-ktx:1.3.1"
+  ) ++ debugDeps()
+}
