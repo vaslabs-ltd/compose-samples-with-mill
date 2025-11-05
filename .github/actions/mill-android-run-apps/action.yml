@@ -1,0 +1,17 @@
+inputs:
+  app-name:
+    description: 'The name of the Android app to test, e.g., JetNews or JetLagged'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run apps
+      run: |
+        ./mill show ${{ inputs.app-name }}.app.androidApk
+        ./mill show ${{ inputs.app-name }}.app.createAndroidVirtualDevice
+        ./mill --debug show ${{ inputs.app-name }}.app.startAndroidEmulator
+        ./mill show ${{ inputs.app-name }}.app.androidInstall
+        ./mill show ${{ inputs.app-name }}.app.androidRun --activity ${{ inputs.app-activity }}
+        ./mill show ${{ inputs.app-name }}.app.stopAndroidEmulator
+      shell: bash
