@@ -1,0 +1,135 @@
+package build.Jetcaster
+
+import mill.*
+import androidlib.*
+import kotlinlib.*
+import build.*
+import mill.api.Task.Simple as T
+import mill.api.{PathRef, Task}
+import mill.javalib.api.JvmWorkerApi
+import mill.kotlinlib.ksp.KspModule
+import hilt.AndroidHiltSupport
+
+import java.nio.file.Files
+
+object Versions {
+  val kotlinVersion = "2.1.21"
+  val kspVersion = "2.0.2"
+}
+
+//AndroidBuildConfig ?
+object mobile extends BaseAndroidModule, AndroidR8AppModule, AndroidHiltSupport {
+
+  override def androidApplicationNamespace: String = "com.example.jetcaster"
+
+  override def androidApplicationId: String = "com.example.jetcaster"
+
+  override def bomMvnDeps: T[Seq[Dep]] = Seq(
+    mvn"androidx.compose:compose-bom:2025.06.00"
+  )
+
+  override def androidDebugSettings: T[AndroidBuildTypeSettings] = Task {
+    AndroidBuildTypeSettings(
+      isMinifyEnabled = false
+    )
+  }
+  def androidProjectProguardFiles = Task.Sources(
+    "proguard-rules.pro"
+  )
+  def androidDefaultProguardFileNames: Task[Seq[String]] = Task.Anon {
+    Seq("proguard-android-optimize.txt")
+  }
+
+  override def androidEnableCompose: T[Boolean] = true
+
+  override def kotlinUseEmbeddableCompiler: Task[Boolean] = Task {
+    true
+  }
+
+  override def kotlinVersion = Versions.kotlinVersion
+  def kspVersion = Versions.kspVersion
+  def kspJvmTarget = "17"
+
+  private def debugMvnDeps: T[Seq[Dep]] = Task {
+      Seq(
+        mvn"androidx.compose.ui:ui-tooling"
+      )
+  }
+
+
+
+  override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
+
+      /*
+      implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.collections.immutable)
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.palette)
+       */
+    mvn"org.jetbrains.kotlin:kotlin-stdlib-jdk8:${build.Versions.kotlinVersion}",
+    mvn"org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2",
+    mvn"org.jetbrains.kotlinx:kotlinx-collections-immutable:0.4.0",
+    mvn"androidx.core:core-ktx:1.16.0",
+    mvn"androidx.palette:palette:1.0.0",
+
+    /*
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+     */
+    // Hilt
+    mvn"androidx.hilt:hilt-navigation-compose:1.2.0",
+    mvn"com.google.dagger:hilt-android:2.56.2",
+
+    /*
+    Compose
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material3.adaptive)
+    implementation(libs.androidx.compose.material3.adaptive.layout)
+    implementation(libs.androidx.compose.material3.adaptive.navigation)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+     */
+    // Compose
+    mvn"androidx.activity:activity-compose:1.10.1",
+    mvn"androidx.compose.foundation:foundation",
+    mvn"com.google.android.material:material:1.13.0-alpha13",
+    mvn"androidx.compose.material3:material3",
+    mvn"androidx.compose.material3.adaptive:adaptive",
+    mvn"androidx.compose.material3.adaptive:adaptive-layout",
+    mvn"androidx.compose.material3.adaptive:adaptive-navigation",
+    mvn"androidx.compose.ui:ui",
+    mvn"androidx.compose.ui:ui-tooling-preview",
+
+    /*
+    More Compose
+    implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.lifecycle.viewModelCompose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.navigation.compose)
+
+    implementation(libs.androidx.window)
+    implementation(libs.androidx.window.core)
+
+    implementation(libs.accompanist.adaptive)
+
+    implementation(libs.coil.kt.compose)
+     */
+    mvn"androidx.lifecycle:lifecycle-runtime-ktx:2.9.1",
+    mvn"androidx.lifecycle:lifecycle-viewmodel-compose:2.9.1",
+    mvn"androidx.lifecycle:lifecycle-runtime-compose:2.9.1",
+    mvn"androidx.navigation:navigation-compose:2.9.0",
+    mvn"androidx.window:window:1.4.0",
+    mvn"androidx.window:window-core:1.4.0",
+    mvn"com.google.accompanist:accompanist-adaptive:0.37.3",
+    mvn"io.coil-kt:coil-compose:2.7.0",
+  ) ++ (if (androidIsDebug()) debugMvnDeps() else Seq())
+
+  def kotlinSymbolProcessors: T[Seq[Dep]] = Seq(
+    mvn"com.google.dagger:hilt-compiler:2.56.2"
+  )
+}
