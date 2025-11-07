@@ -193,6 +193,23 @@ object core extends mill.api.Module {
 
   }
 
+  object `data-testing` extends BaseAndroidModule {
+    override def androidNamespace: String = "com.example.jetcaster.core.data.testing"
+
+    override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
+      /*
+      implementation(libs.androidx.core.ktx)
+       */
+      mvn"androidx.core:core-ktx:1.16.0"
+    )
+
+    // testing???
+
+    override def moduleDeps = super.moduleDeps ++ Seq(
+      core.data
+    )
+  }
+
   object designsystem extends BaseAndroidModule {
     override def androidNamespace: String = "com.example.jetcaster.core.designsystem"
 
@@ -236,13 +253,21 @@ object core extends mill.api.Module {
 
     override def moduleDeps = super.moduleDeps ++ Seq(
       core.data,
-//      core.dataTesting
+      core.`data-testing`
     )
 
     // testing???
   }
 
-//  object domainTesting extends BaseAndroidModule
+  object `domain-testing` extends BaseAndroidModule {
+    override def androidNamespace: String = "com.example.jetcaster.core.domain.testing"
+
+    // testing???
+
+    override def moduleDeps = super.moduleDeps ++ Seq(
+      core.domain
+    )
+  }
 }
 
 
@@ -343,7 +368,7 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
     core.designsystem,
     core.domain,
     glancewidget,
-//    core.domainTesting
+    core.`domain-testing`
   )
 
 
@@ -386,7 +411,6 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
     // Compose
     mvn"androidx.activity:activity-compose:1.10.1",
     mvn"androidx.compose.foundation:foundation",
-    mvn"com.google.android.material:material:1.13.0-alpha13",
     mvn"androidx.compose.material3:material3",
     mvn"androidx.compose.material3.adaptive:adaptive",
     mvn"androidx.compose.material3.adaptive:adaptive-layout",
@@ -416,5 +440,11 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
     mvn"androidx.window:window-core:1.4.0",
     mvn"com.google.accompanist:accompanist-adaptive:0.37.3",
     mvn"io.coil-kt:coil-compose:2.7.0",
+
+    // extra deps
+    mvn"com.google.android.material:material:1.13.0-alpha13",
+    mvn"androidx.compose.material:material-icons-extended",
+
+
   ) ++ (if (androidIsDebug()) debugMvnDeps() else Seq())
 }
