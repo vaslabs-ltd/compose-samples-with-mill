@@ -27,12 +27,6 @@ trait BaseAndroidModule extends AndroidKotlinModule {
   def androidCompileSdk = Versions.androidCompileSdk
 
   def androidMinSdk = Versions.androidMinSdk
-
-  def androidEnableCompose: T[Boolean] = true
-
-  def bomMvnDeps: T[Seq[Dep]] = Seq(
-    mvn"androidx.compose:compose-bom:2025.06.00"
-  )
 }
 
 trait BaseHiltAndroidModule extends BaseAndroidModule, AndroidHiltSupport {
@@ -80,6 +74,12 @@ trait BaseHiltAndroidModule extends BaseAndroidModule, AndroidHiltSupport {
 object core extends mill.api.Module {
   object data extends BaseHiltAndroidModule {
     override def androidNamespace: String = "com.example.jetcaster.core.data"
+
+    def androidEnableCompose: T[Boolean] = true
+
+    def bomMvnDeps: T[Seq[Dep]] = Seq(
+      mvn"androidx.compose:compose-bom:2025.06.00"
+    )
 
     override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
       /*
@@ -147,7 +147,14 @@ object core extends mill.api.Module {
   }
 
   object designsystem extends BaseAndroidModule {
+
     override def androidNamespace: String = "com.example.jetcaster.core.designsystem"
+
+    def androidEnableCompose: T[Boolean] = true
+
+    def bomMvnDeps: T[Seq[Dep]] = Seq(
+      mvn"androidx.compose:compose-bom:2025.06.00"
+    )
 
     override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
       /*
@@ -210,6 +217,13 @@ object core extends mill.api.Module {
 object glancewidget extends BaseAndroidModule {
 
   override def androidNamespace: String = "com.example.jetcaster.glancewidget"
+
+  def androidEnableCompose: T[Boolean] = true
+
+  def bomMvnDeps: T[Seq[Dep]] = Seq(
+    mvn"androidx.compose:compose-bom:2025.06.00"
+  )
+
   /*
   debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
@@ -271,6 +285,12 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
   override def androidApplicationNamespace: String = "com.example.jetcaster"
 
   override def androidApplicationId: String = "com.example.jetcaster"
+
+  def androidEnableCompose: T[Boolean] = true
+
+  def bomMvnDeps: T[Seq[Dep]] = Seq(
+    mvn"androidx.compose:compose-bom:2025.06.00"
+  )
 
   override def androidDebugSettings: T[AndroidBuildTypeSettings] = Task {
     AndroidBuildTypeSettings(
@@ -383,4 +403,5 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
 
 
   ) ++ (if (androidIsDebug()) debugMvnDeps() else Seq())
+
 }
