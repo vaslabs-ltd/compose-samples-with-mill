@@ -55,23 +55,6 @@ object app extends BaseAndroidModule, AndroidR8AppModule {
       Seq.empty
   }
 
-  override def resolutionParams: Task[ResolutionParams] = Task.Anon {
-    val buildTypeAttr = if (androidIsDebug())
-      "debug"
-    else
-      "release"
-    super.resolutionParams().addVariantAttributes(
-      "com.android.build.api.attributes.BuildTypeAttr" ->
-        VariantMatcher.AnyOf(Seq(
-          VariantMatcher.Equals(buildTypeAttr)
-        )),
-      "com.android.build.api.attributes.VariantAttr" ->
-        VariantMatcher.AnyOf(Seq(
-          VariantMatcher.Equals(buildTypeAttr)
-        ))
-    )
-  }
-
   override def mvnDeps = super.mvnDeps() ++ Seq(
     mvn"androidx.core:core-ktx:1.17.0",
     mvn"org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion()}",
