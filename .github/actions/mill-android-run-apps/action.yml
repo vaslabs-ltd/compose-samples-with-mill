@@ -2,6 +2,9 @@ inputs:
   app-name:
     description: 'The name of the Android app to test, e.g., JetNews or JetLagged'
     required: true
+  app-activity:
+    description: 'The class qualifier of the activity to run'
+    required: true
 
 runs:
   using: "composite"
