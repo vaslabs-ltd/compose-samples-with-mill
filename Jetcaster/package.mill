@@ -94,8 +94,6 @@ object core extends mill.api.Module {
       mvn"com.rometools:rome:2.1.0",
       mvn"com.rometools:rome-modules:2.1.0",
     )
-    // testing???
-
   }
 
   object `data-testing` extends BaseAndroidModule {
@@ -104,8 +102,6 @@ object core extends mill.api.Module {
     override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
       mvn"androidx.core:core-ktx:1.16.0"
     )
-
-    // testing???
 
     override def moduleDeps = super.moduleDeps ++ Seq(
       core.data
@@ -151,13 +147,16 @@ object core extends mill.api.Module {
       core.`data-testing`
     )
 
-    // testing???
+    object test extends AndroidKotlinTestModule with TestModule.Junit4 {
+      override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
+        mvn"junit:junit:4.13.2",
+        mvn"org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2"
+      )
+    }
   }
 
   object `domain-testing` extends BaseAndroidModule {
     override def androidNamespace: String = "com.example.jetcaster.core.domain.testing"
-
-    // testing???
 
     override def moduleDeps = super.moduleDeps ++ Seq(
       core.domain
@@ -202,9 +201,6 @@ object glancewidget extends BaseAndroidModule {
   override def moduleDeps = super.moduleDeps ++ Seq(
     core.designsystem
   )
-
-//  object androidTest ??
-
 }
 
 object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
