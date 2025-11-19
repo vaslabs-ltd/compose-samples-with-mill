@@ -15,7 +15,8 @@ import java.nio.file.Files
 object Versions {
   val kotlinVersion = "2.1.21"
   val kspVersion = "2.0.2"
-  val androidCompileSdk = 33
+  val androidCompileSdk = 36
+  val androidTargetSdk = 33
   val androidMinSdk = 21
 }
 
@@ -26,7 +27,24 @@ trait BaseAndroidModule extends AndroidKotlinModule {
 
   def androidCompileSdk = Versions.androidCompileSdk
 
+  def androidTargetSdk = Versions.androidTargetSdk
+
   def androidMinSdk = Versions.androidMinSdk
+
+
+  // https://github.com/com-lihaoyi/mill/pull/6218
+  def androidDirectModuleDepsManifests: T[Seq[PathRef]] = Task {
+    Task.traverse(moduleDepsChecked) {
+      case m: AndroidModule =>
+        Task.Anon(Seq(m.androidManifest()))
+      case _ =>
+        Task.Anon(Seq.empty)
+    }().flatten
+  }
+
+  override def androidMergeableManifests: Task[Seq[PathRef]] = Task {
+    androidUnpackRunArchives().flatMap(_.manifest) ++ androidDirectModuleDepsManifests()
+  }
 }
 
 trait BaseHiltAndroidModule extends BaseAndroidModule, AndroidHiltSupport {
@@ -285,27 +303,8 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
 
   ) ++ (if (androidIsDebug()) debugMvnDeps() else Seq())
 
-  def generatedBuildConfig: T[PathRef] = Task {
-    val buildType = if (androidIsDebug()) "debug" else "release"
-    val content: String =
-      s"""
-         |package $androidNamespace;
-         |public final class BuildConfig {
-         |  public static final boolean DEBUG = ${androidIsDebug()};
-         |  public static final String BUILD_TYPE = "${buildType}";
-         |  public static final String APPLICATION_ID = "${androidApplicationId}";
-         |  public static final int VERSION_CODE = ${androidVersionCode()};
-         |  public static final String VERSION_NAME = "${androidVersionName()}";
-         |}
-        """.stripMargin
-
-    val destination = Task.dest / "source" / os.SubPath(androidNamespace.replace(
-      ".",
-      "/"
-    )) / "BuildConfig.java"
-
-    os.write(destination, content, createFolders = true)
-
-    PathRef(destination)
+  override def androidMergeableManifests: T[Seq[PathRef]] = Task {
+    val debugManifest = Seq(androidDebugManifestLocation()).filter(pr => os.exists(pr.path))
+    super[BaseHiltAndroidModule].androidMergeableManifests() ++ debugManifest
   }
 }
