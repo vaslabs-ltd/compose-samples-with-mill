@@ -46,6 +46,14 @@ trait BaseAndroidModule extends AndroidKotlinModule {
   override def androidMergeableManifests: Task[Seq[PathRef]] = Task {
     androidUnpackRunArchives().flatMap(_.manifest) ++ androidDirectModuleDepsManifests()
   }
+
+  // https://android.googlesource.com/platform/tools/base/+/refs/heads/mirror-goog-studio-main/build-system/builder/src/main/java/com/android/builder/internal/aapt/v2/AaptV2CommandBuilder.kt#326
+  override def androidAaptOptions = Task {
+    super.androidAaptOptions() ++ Seq(
+      "--no-version-vectors"
+    )
+  }
+
 }
 
 trait BaseHiltAndroidModule extends BaseAndroidModule, AndroidHiltSupport {
@@ -54,32 +62,6 @@ trait BaseHiltAndroidModule extends BaseAndroidModule, AndroidHiltSupport {
 
   override def kotlinUseEmbeddableCompiler: Task[Boolean] = Task {
     true
-  }
-
-  def generatedBuildConfig: T[PathRef] = Task {
-    val buildType = if (androidIsDebug()) "debug" else "release"
-    val content: String =
-      s"""
-         |package $androidNamespace;
-         |public final class BuildConfig {
-         |  public static final boolean DEBUG = ${androidIsDebug()};
-         |  public static final String BUILD_TYPE = "${buildType}";
-         |  public static final String LIBRARY_PACKAGE_NAME = "${androidNamespace}";
-         |}
-        """.stripMargin
-
-    val destination = Task.dest / "source" / os.SubPath(androidNamespace.replace(
-      ".",
-      "/"
-    )) / "BuildConfig.java"
-
-    os.write(destination, content, createFolders = true)
-
-    PathRef(destination)
-  }
-
-  override def generatedSources: T[Seq[PathRef]] = Task {
-    super.generatedSources() ++ Seq(generatedBuildConfig())
   }
 }
 
