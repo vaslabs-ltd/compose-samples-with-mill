@@ -50,7 +50,7 @@ trait BaseAndroidModule extends AndroidKotlinModule {
   // https://android.googlesource.com/platform/tools/base/+/refs/heads/mirror-goog-studio-main/build-system/builder/src/main/java/com/android/builder/internal/aapt/v2/AaptV2CommandBuilder.kt#326
   override def androidAaptOptions = Task {
     super.androidAaptOptions() ++ Seq(
-      "--no-version-vectors"
+      "--non-final-ids"
     )
   }
 
@@ -225,6 +225,26 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
       isMinifyEnabled = false
     )
   }
+
+  def extraPackages = Task {
+    Seq(
+      core.data,
+      core.designsystem,
+      core.domain,
+      glancewidget,
+      core.`domain-testing`
+    ).flatMap(lib => Seq("--extra-packages", lib.androidNamespace))
+  }
+  
+  override def androidLibsRClasses = Task {
+    (super.androidLibsRClasses()
+      ++ os.walk(androidLinkedResources().path / "generatedSources").filter(
+      os.isFile
+    ).filter(_.ext == "java").map(PathRef(_))).distinct
+  }
+
+  override def androidAaptOptions =
+    super.androidAaptOptions().filterNot(_ == "--non-final-ids") ++ extraPackages()
 
   def androidProjectProguardFiles = Task.Sources(
     "proguard-rules.pro"
