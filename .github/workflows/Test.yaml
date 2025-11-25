@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [ JetLagged, JetNews, Jetsnack, Jetchat ]
+        app: [ JetLagged.app, JetNews.app, Jetsnack.app, Jetchat.app ]
     steps:
       - uses: coursier/cache-action@v6
       - uses: actions/checkout@v4
@@ -42,10 +42,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [ Reply ]
+        app: [ Reply.app, Jetcaster.mobile ]
         include:
-          - app: Reply
+          - app: Reply.app
             app-activity: com.example.reply.ui.MainActivity
+          - app: Jetcaster.mobile
+            app-activity: com.example.jetcaster.ui.MainActivity
     steps:
       - uses: coursier/cache-action@v6
       - uses: actions/checkout@v4

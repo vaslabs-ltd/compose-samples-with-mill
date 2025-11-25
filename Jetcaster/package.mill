@@ -33,25 +33,13 @@ trait BaseAndroidModule extends AndroidKotlinModule {
   def androidMinSdk = Versions.androidMinSdk
 
 
-  // https://github.com/com-lihaoyi/mill/pull/6218
-  def androidDirectModuleDepsManifests: T[Seq[PathRef]] = Task {
-    Task.traverse(moduleDepsChecked) {
-      case m: AndroidModule =>
-        Task.Anon(Seq(m.androidManifest()))
-      case _ =>
-        Task.Anon(Seq.empty)
-    }().flatten
-  }
-
   override def androidMergeableManifests: Task[Seq[PathRef]] = Task {
     androidUnpackRunArchives().flatMap(_.manifest) ++ androidDirectModuleDepsManifests()
   }
 
   // https://android.googlesource.com/platform/tools/base/+/refs/heads/mirror-goog-studio-main/build-system/builder/src/main/java/com/android/builder/internal/aapt/v2/AaptV2CommandBuilder.kt#326
   override def androidAaptOptions = Task {
-    super.androidAaptOptions() ++ Seq(
-      "--non-final-ids"
-    )
+    super.androidAaptOptions()
   }
 
 }
@@ -235,7 +223,7 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
       core.`domain-testing`
     ).flatMap(lib => Seq("--extra-packages", lib.androidNamespace))
   }
-  
+
   override def androidLibsRClasses = Task {
     (super.androidLibsRClasses()
       ++ os.walk(androidLinkedResources().path / "generatedSources").filter(

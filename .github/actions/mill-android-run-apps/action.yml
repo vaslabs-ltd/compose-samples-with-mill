@@ -11,10 +11,10 @@ runs:
   steps:
     - name: Run apps
       run: |
-        ./mill show ${{ inputs.app-name }}.app.androidApk
-        ./mill show ${{ inputs.app-name }}.app.createAndroidVirtualDevice
-        ./mill --debug show ${{ inputs.app-name }}.app.startAndroidEmulator
-        ./mill show ${{ inputs.app-name }}.app.androidInstall
-        ./mill show ${{ inputs.app-name }}.app.androidRun --activity ${{ inputs.app-activity }}
-        ./mill show ${{ inputs.app-name }}.app.stopAndroidEmulator
+        ./mill show ${{ inputs.app-name }}.androidApk
+        ./mill show ${{ inputs.app-name }}.createAndroidVirtualDevice
+        ./mill --debug show ${{ inputs.app-name }}.startAndroidEmulator
+        ./mill show ${{ inputs.app-name }}.androidInstall
+        ./mill show ${{ inputs.app-name }}.androidRun --activity ${{ inputs.app-activity }}
+        ./mill show ${{ inputs.app-name }}.stopAndroidEmulator
       shell: bash
