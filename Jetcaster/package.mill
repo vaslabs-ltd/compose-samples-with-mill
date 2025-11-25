@@ -39,7 +39,7 @@ trait BaseAndroidModule extends AndroidKotlinModule {
 
   // https://android.googlesource.com/platform/tools/base/+/refs/heads/mirror-goog-studio-main/build-system/builder/src/main/java/com/android/builder/internal/aapt/v2/AaptV2CommandBuilder.kt#326
   override def androidAaptOptions = Task {
-    super.androidAaptOptions()
+    super.androidAaptOptions() ++ Seq("--non-final-ids")
   }
 
 }
@@ -215,13 +215,9 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
   }
 
   def extraPackages = Task {
-    Seq(
-      core.data,
-      core.designsystem,
-      core.domain,
-      glancewidget,
-      core.`domain-testing`
-    ).flatMap(lib => Seq("--extra-packages", lib.androidNamespace))
+    moduleDeps.collect[AndroidModule] {
+      case p: AndroidModule => p
+    }.flatMap(lib => Seq("--extra-packages", lib.androidNamespace))
   }
 
   override def androidLibsRClasses = Task {
@@ -241,10 +237,16 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
     Seq("proguard-android-optimize.txt")
   }
 
-  // Missing javax.xml.*
-  // Missing javax.lang.model.*
+
   // Missing org.jaxen.*
-  override def androidR8Args = Seq("--map-diagnostics", "error", "warning")
+  override def androidR8Args = Seq(
+    "--map-diagnostics", "error", "warning"
+  ) ++ Seq(
+    // Fixes
+    // Missing javax.xml.*
+    // Missing javax.lang.model.*
+    "--lib", androidR8JavaHome().path.toString
+  )
 
 
   private def debugMvnDeps: T[Seq[Dep]] = Task {
@@ -299,57 +301,5 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
     super[BaseHiltAndroidModule].androidMergeableManifests() ++ debugManifest
   }
 
-  /**
-   * File names to be excluded from the APK package.
-   */
-  def excludePackageResources: T[Seq[String]] = Task {
-    Seq("configuration.txt", "seeds.txt", "mapping.txt")
-  }
-
-  /**
-   * Packages DEX files and Android resources into an unsigned APK.
-   *
-   * @return A `PathRef` to the generated unsigned APK file (`app.unsigned.apk`).
-   */
-  def androidUnsignedApk: T[PathRef] = Task {
-    val unsignedApk = Task.dest / "app.unsigned.apk"
-
-    os.copy(androidLinkedResources().path / "apk/res.apk", unsignedApk)
-
-    val androidDexPath = androidDex().path
-    val toExclude = excludePackageResources().map(androidDexPath / _).toSet
-    val resources =
-      os.walk(androidDexPath).filterNot(p => os.isDir(p) || toExclude.contains(p)).map(p =>
-        os.zip.ZipSource.fromPathTuple((p, p.subRelativeTo(androidDexPath)))
-      )
-
-    def asZipSource(androidPackageableExtraFile: AndroidPackageableExtraFile): os.zip.ZipSource =
-      os.zip.ZipSource.fromPathTuple(
-        (androidPackageableExtraFile.source.path, androidPackageableExtraFile.destination.asSubPath)
-      )
-
-    val nativeDeps = androidPackageableNativeDeps().map(asZipSource)
-
-    // add all the extra files to the APK
-    val extraFiles: Seq[zip.ZipSource] = androidPackageableExtraFiles().map(asZipSource)
-
-    // TODO generate aar-metadata.properties (for lib distribution, not in this module) or
-    //  app-metadata.properties (for app distribution).
-    // Example of aar-metadata.properties:
-    // aarFormatVersion=1.0
-    // aarMetadataVersion=1.0
-    // minCompileSdk=33
-    // minCompileSdkExtension=0
-    // minAndroidGradlePluginVersion=1.0.0
-    //
-    // Example of app-metadata.properties:
-    // appMetadataVersion=1.1
-    // androidGradlePluginVersion=8.7.2
-    os.zip(unsignedApk, resources)
-    os.zip(unsignedApk, nativeDeps)
-    os.zip(unsignedApk, extraFiles)
-
-    PathRef(unsignedApk)
-  }
 
 }
