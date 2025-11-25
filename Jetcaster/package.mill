@@ -12,6 +12,7 @@ import hilt.AndroidHiltSupport
 import os.zip
 
 import java.nio.file.Files
+import scala.util.matching.Regex
 
 object Versions {
   val kotlinVersion = "2.1.21"
@@ -296,10 +297,7 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
 
   ) ++ (if (androidIsDebug()) debugMvnDeps() else Seq())
 
-  override def androidMergeableManifests: T[Seq[PathRef]] = Task {
-    val debugManifest = Seq(androidDebugManifestLocation()).filter(pr => os.exists(pr.path))
-    super[BaseHiltAndroidModule].androidMergeableManifests() ++ debugManifest
-  }
-
+  override def androidExcludePackageFiles: T[Seq[Regex]] =
+    super.androidExcludePackageFiles() ++ Seq[Regex]("/*.jar".r)
 
 }
