@@ -9,6 +9,7 @@ runs:
     - name: Run instrumentation tests
       run: |
         ./mill show ${{ inputs.app-name }}.androidApk
+        ./mill show ${{ inputs.app-name }}.androidTest.androidTestApk
         ./mill show ${{ inputs.app-name }}.createAndroidVirtualDevice
         ./mill --debug show ${{ inputs.app-name }}.startAndroidEmulator
         ./mill show ${{ inputs.app-name }}.androidTest
