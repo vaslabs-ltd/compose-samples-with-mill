@@ -215,22 +215,13 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
     )
   }
 
-  def extraPackages = Task {
-    moduleDeps.collect[AndroidModule] {
-      case p: AndroidModule => p
-    }.flatMap(lib => Seq("--extra-packages", lib.androidNamespace))
-  }
-
   override def androidLibsRClasses = Task {
     (super.androidLibsRClasses()
       ++ os.walk(androidLinkedResources().path / "generatedSources").filter(
       os.isFile
     ).filter(_.ext == "java").map(PathRef(_))).distinct
   }
-
-  override def androidAaptOptions =
-    super.androidAaptOptions().filterNot(_ == "--non-final-ids") ++ extraPackages()
-
+  
   def androidProjectProguardFiles = Task.Sources(
     "proguard-rules.pro"
   )
