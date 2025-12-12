@@ -21,6 +21,10 @@ object app extends BaseAndroidModule, AndroidR8AppModule {
     mvn"androidx.compose:compose-bom:2025.08.00"
   )
 
+  override def kotlincUseBtApi: T[Boolean] = Task {
+    false
+  }
+
   override def androidDebugSettings: T[AndroidBuildTypeSettings] = Task {
     AndroidBuildTypeSettings(
       isMinifyEnabled = false
