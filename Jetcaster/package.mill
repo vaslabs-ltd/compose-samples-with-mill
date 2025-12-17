@@ -247,9 +247,6 @@ trait BaseJetcasterAppModule extends BaseHiltAndroidModule, AndroidR8AppModule {
       )
     })
   }
-}
-
-object mobile extends BaseJetcasterAppModule {
 
   // Missing org.jaxen.*
   override def androidR8Args = Seq(
@@ -260,7 +257,9 @@ object mobile extends BaseJetcasterAppModule {
     // Missing javax.lang.model.*
     "--lib", androidR8JavaHome().path.toString
   )
+}
 
+object mobile extends BaseJetcasterAppModule {
 
   private def debugMvnDeps: T[Seq[Dep]] = Task {
       Seq(
@@ -316,6 +315,8 @@ object mobile extends BaseJetcasterAppModule {
 
 object tv extends BaseJetcasterAppModule {
 
+  override def androidApplicationNamespace: String = "com.example.jetcaster.tv"
+
   private def debugMvnDeps: T[Seq[Dep]] = Task {
     Seq(
       mvn"androidx.compose.ui:ui-tooling",
@@ -355,10 +356,17 @@ object tv extends BaseJetcasterAppModule {
   override def androidExcludePackageFiles: T[Seq[Regex]] =
     Seq[Regex]("^/META-INF/(AL2.0|LGPL2.1)$".r, "/*.jar".r, "/*.jar".r)
 
-  // Use google-tv image
+
+  // Use system-images;android-34;android-tv;x86 image
+  override def androidEmulatorArchitecture = "x86"
+
+  override def androidVirtualDeviceIdentifier = "test-tv"
+
+  override def androidDeviceId = "tv_1080p"
+
   override def sdkInstallSystemImage(): Command[String] = Task.Command {
     val image =
-      s"system-images;${androidSdkModule().platformsVersion()};google-tv;$androidEmulatorArchitecture"
+      s"system-images;android-34;android-tv;$androidEmulatorArchitecture"
     Task.log.info(s"Downloading $image")
     val installCall = os.call((
       androidSdkModule().sdkManagerExe().path,
@@ -402,7 +410,12 @@ object wear extends BaseJetcasterAppModule {
     Seq[Regex]("^/META-INF/(AL2.0|LGPL2.1)$".r, "/*.jar".r, "^rome-utils-.*\\.jar$".r)
 
 
-  // Use android-wear image
+  // Use system-images;android-34;android-tv;x86_64 image
+
+  override def androidVirtualDeviceIdentifier = "test-wear"
+
+  override def androidDeviceId = "wearos_large_round"
+
   override def sdkInstallSystemImage(): Command[String] = Task.Command {
     val image =
       s"system-images;android-34;android-wear;$androidEmulatorArchitecture"
