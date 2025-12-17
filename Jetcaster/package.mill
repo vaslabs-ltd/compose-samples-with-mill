@@ -389,7 +389,8 @@ object wear extends BaseJetcasterAppModule {
 
   private def debugMvnDeps: T[Seq[Dep]] = Task {
     Seq(
-
+      mvn"androidx.compose.ui:ui-tooling",
+      mvn"androidx.compose.ui:ui-test-manifest"
     )
   }
 
@@ -403,6 +404,38 @@ object wear extends BaseJetcasterAppModule {
 
   override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
 
+    mvn"androidx.activity:activity-compose:1.10.1",
+    mvn"androidx.core:core-splashscreen:1.0.1",
+    mvn"androidx.wear.compose:compose-material3:1.5.0-beta03",
+    mvn"androidx.compose.material3:material3",
+    mvn"org.jetbrains.kotlinx:kotlinx-collections-immutable:0.4.0",
+    mvn"androidx.wear.compose:compose-foundation:1.5.0-beta03",
+    mvn"androidx.media3:media3-exoplayer:1.7.1",
+    mvn"androidx.media3:media3-session:1.7.1",
+    mvn"androidx.media3:media3-ui-compose:1.7.1",
+    mvn"androidx.media3:media3-common-ktx:1.7.1",
+
+    // Horologist
+    mvn"com.google.android.horologist:horologist-compose-layout:0.7.14-beta",
+    mvn"com.google.android.horologist:horologist-media-ui:0.7.14-beta",
+    mvn"com.google.android.horologist:horologist-media-ui-material3:0.7.14-beta",
+    mvn"com.google.android.horologist:horologist-audio-ui-model:0.7.14-beta",
+    mvn"com.google.android.horologist:horologist-audio-ui:0.7.14-beta",
+    mvn"com.google.android.horologist:horologist-audio-ui-material3:0.7.14-beta",
+    mvn"com.google.android.horologist:horologist-audio-ui-model:0.7.14-beta",
+    mvn"com.google.android.horologist:horologist-media-data:0.7.14-beta",
+    mvn"com.google.android.horologist:horologist-images-coil:0.7.14-beta",
+
+    // Hilt
+    mvn"androidx.hilt:hilt-navigation-compose:1.2.0",
+    mvn"com.google.dagger:hilt-android:2.56.2",
+
+    mvn"androidx.compose.ui:ui-tooling-preview",
+    mvn"androidx.compose.ui:ui-tooling",
+
+    mvn"androidx.wear.compose:compose-navigation:1.5.0-beta03",
+    mvn"androidx.compose.ui:ui-test-manifest",
+    mvn"io.coil-kt:coil-compose:2.7.0",
   ) ++ (if (androidIsDebug()) debugMvnDeps() else Seq())
 
 
@@ -441,4 +474,6 @@ object wear extends BaseJetcasterAppModule {
       "-opt-in=kotlin.RequiresOptIn",
       "-opt-in=com.google.android.horologist.annotations.ExperimentalHorologistApi"
     )
+
+  // TODO: Add androidTest
 }
