@@ -214,13 +214,6 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
       isMinifyEnabled = false
     )
   }
-
-  override def androidLibsRClasses = Task {
-    (super.androidLibsRClasses()
-      ++ os.walk(androidLinkedResources().path / "generatedSources").filter(
-      os.isFile
-    ).filter(_.ext == "java").map(PathRef(_))).distinct
-  }
   
   def androidProjectProguardFiles = Task.Sources(
     "proguard-rules.pro"
@@ -289,6 +282,165 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
   ) ++ (if (androidIsDebug()) debugMvnDeps() else Seq())
 
   override def androidExcludePackageFiles: T[Seq[Regex]] =
-    super.androidExcludePackageFiles() ++ Seq[Regex]("/*.jar".r)
+    Seq[Regex]("/*.jar".r)
 
+}
+
+object tv extends BaseHiltAndroidModule, AndroidR8AppModule {
+  override def androidApplicationNamespace: String = "com.example.jetcaster"
+
+  override def androidApplicationId: String = "com.example.jetcaster"
+
+  def androidEnableCompose: T[Boolean] = true
+
+  def bomMvnDeps: T[Seq[Dep]] = Seq(
+    mvn"androidx.compose:compose-bom-alpha:2025.06.00"
+  )
+
+  def kotlinSymbolProcessors: T[Seq[Dep]] = Seq(
+    mvn"com.google.dagger:hilt-compiler:2.56.2",
+  )
+
+  override def androidDebugSettings: T[AndroidBuildTypeSettings] = Task {
+    AndroidBuildTypeSettings(
+      isMinifyEnabled = false
+    )
+  }
+
+  def androidProjectProguardFiles = Task.Sources(
+    "proguard-rules.pro"
+  )
+
+  def androidDefaultProguardFileNames: Task[Seq[String]] = Task.Anon {
+    Seq("proguard-android-optimize.txt")
+  }
+
+
+  private def debugMvnDeps: T[Seq[Dep]] = Task {
+    Seq(
+
+    )
+  }
+
+  def moduleDeps = super.moduleDeps ++ Seq(
+    core.data,
+    core.designsystem,
+    core.domain,
+    core.`domain-testing`
+  )
+
+
+  override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
+
+  ) ++ (if (androidIsDebug()) debugMvnDeps() else Seq())
+
+
+  override def androidExcludePackageFiles: T[Seq[Regex]] =
+    Seq[Regex]("^/META-INF/(AL2.0|LGPL2.1)$".r, "/*.jar".r, "/*.jar".r)
+
+  // Use google-tv image
+  override def sdkInstallSystemImage(): Command[String] = Task.Command {
+    val image =
+      s"system-images;${androidSdkModule().platformsVersion()};google-tv;$androidEmulatorArchitecture"
+    Task.log.info(s"Downloading $image")
+    val installCall = os.call((
+      androidSdkModule().sdkManagerExe().path,
+      "--install",
+      image
+    ))
+
+    if (installCall.exitCode != 0) {
+      Task.log.error(
+        s"Error trying to install android emulator system image ${installCall.err.text()}"
+      )
+      throw new Exception(s"Failed to install system image $image: ${installCall.exitCode}")
+    }
+    image
+  }
+}
+
+
+object wear extends BaseHiltAndroidModule, AndroidR8AppModule {
+  override def androidApplicationNamespace: String = "com.example.jetcaster"
+
+  override def androidApplicationId: String = "com.example.jetcaster"
+
+  override def androidMinSdk: T[Int] = 26
+
+  override def androidTargetSdk: T[Int] = 34
+
+  def androidEnableCompose: T[Boolean] = true
+
+  def bomMvnDeps: T[Seq[Dep]] = Seq(
+    mvn"androidx.compose:compose-bom-alpha:2025.06.00"
+  )
+
+  def kotlinSymbolProcessors: T[Seq[Dep]] = Seq(
+    mvn"com.google.dagger:hilt-compiler:2.56.2",
+  )
+
+  override def androidDebugSettings: T[AndroidBuildTypeSettings] = Task {
+    AndroidBuildTypeSettings(
+      isMinifyEnabled = false
+    )
+  }
+
+  def androidProjectProguardFiles = Task.Sources(
+    "proguard-rules.pro"
+  )
+
+  def androidDefaultProguardFileNames: Task[Seq[String]] = Task.Anon {
+    Seq("proguard-android-optimize.txt")
+  }
+
+
+  private def debugMvnDeps: T[Seq[Dep]] = Task {
+    Seq(
+
+    )
+  }
+
+  def moduleDeps = super.moduleDeps ++ Seq(
+    core.data,
+    core.designsystem,
+    core.domain,
+    core.`domain-testing`
+  )
+
+
+  override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
+
+  ) ++ (if (androidIsDebug()) debugMvnDeps() else Seq())
+
+
+  override def androidExcludePackageFiles: T[Seq[Regex]] =
+    Seq[Regex]("^/META-INF/(AL2.0|LGPL2.1)$".r, "/*.jar".r, "^rome-utils-.*\\.jar$".r)
+
+
+  // Use android-wear image
+  override def sdkInstallSystemImage(): Command[String] = Task.Command {
+    val image =
+      s"system-images;android-34;android-wear;$androidEmulatorArchitecture"
+    Task.log.info(s"Downloading $image")
+    val installCall = os.call((
+      androidSdkModule().sdkManagerExe().path,
+      "--install",
+      image
+    ))
+
+    if (installCall.exitCode != 0) {
+      Task.log.error(
+        s"Error trying to install android emulator system image ${installCall.err.text()}"
+      )
+      throw new Exception(s"Failed to install system image $image: ${installCall.exitCode}")
+    }
+    image
+  }
+
+  override def kotlincOptions: T[Seq[String]] =
+    super.kotlincOptions()
+    ++ Seq(
+      "-opt-in=kotlin.RequiresOptIn",
+      "-opt-in=com.google.android.horologist.annotations.ExperimentalHorologistApi"
+    )
 }
