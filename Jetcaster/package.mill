@@ -5,7 +5,7 @@ import androidlib.*
 import kotlinlib.*
 import build.*
 import mill.api.Task.Simple as T
-import mill.api.{PathRef, Task}
+import mill.api.{PathRef, Task, BuildCtx}
 import mill.javalib.api.JvmWorkerApi
 import mill.kotlinlib.ksp.KspModule
 import hilt.AndroidHiltSupport
@@ -193,8 +193,7 @@ object glancewidget extends BaseAndroidModule {
   )
 }
 
-object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
-
+trait BaseJetcasterAppModule extends BaseHiltAndroidModule, AndroidR8AppModule {
   override def androidApplicationNamespace: String = "com.example.jetcaster"
 
   override def androidApplicationId: String = "com.example.jetcaster"
@@ -214,14 +213,43 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
       isMinifyEnabled = false
     )
   }
-  
+
   def androidProjectProguardFiles = Task.Sources(
     "proguard-rules.pro"
   )
+
   def androidDefaultProguardFileNames: Task[Seq[String]] = Task.Anon {
     Seq("proguard-android-optimize.txt")
   }
 
+
+  def androidComposeCompilerLogsDir = Task{
+    Task.dest
+  }
+
+  //https://gist.github.com/fvilarino/730ab202d798ff10565112532a08f8df
+  def androidComposeCompilerArgs: T[Map[String,String]] = Task {
+    Map(
+      "reportsDestination" -> androidComposeCompilerLogsDir().toString,
+      "metricsDestination" -> androidComposeCompilerLogsDir().toString,
+      "stabilityConfigurationPath" ->
+        (BuildCtx.workspaceRoot / "Jetcaster" / "stability_config.conf").toString
+    )
+  }
+
+  override def kotlincOptions: T[Seq[String]] = {
+    val composeCompilerPluginId = "plugin:androidx.compose.compiler.plugins.kotlin"
+    super.kotlincOptions()
+    ++ androidComposeCompilerArgs().flatMap({ case (key, value) =>
+      Seq(
+        "-P",
+        s"$composeCompilerPluginId:$key=$value"
+      )
+    })
+  }
+}
+
+object mobile extends BaseJetcasterAppModule {
 
   // Missing org.jaxen.*
   override def androidR8Args = Seq(
@@ -286,39 +314,12 @@ object mobile extends BaseHiltAndroidModule, AndroidR8AppModule {
 
 }
 
-object tv extends BaseHiltAndroidModule, AndroidR8AppModule {
-  override def androidApplicationNamespace: String = "com.example.jetcaster"
-
-  override def androidApplicationId: String = "com.example.jetcaster"
-
-  def androidEnableCompose: T[Boolean] = true
-
-  def bomMvnDeps: T[Seq[Dep]] = Seq(
-    mvn"androidx.compose:compose-bom-alpha:2025.06.00"
-  )
-
-  def kotlinSymbolProcessors: T[Seq[Dep]] = Seq(
-    mvn"com.google.dagger:hilt-compiler:2.56.2",
-  )
-
-  override def androidDebugSettings: T[AndroidBuildTypeSettings] = Task {
-    AndroidBuildTypeSettings(
-      isMinifyEnabled = false
-    )
-  }
-
-  def androidProjectProguardFiles = Task.Sources(
-    "proguard-rules.pro"
-  )
-
-  def androidDefaultProguardFileNames: Task[Seq[String]] = Task.Anon {
-    Seq("proguard-android-optimize.txt")
-  }
-
+object tv extends BaseJetcasterAppModule {
 
   private def debugMvnDeps: T[Seq[Dep]] = Task {
     Seq(
-
+      mvn"androidx.compose.ui:ui-tooling",
+      mvn"androidx.compose.ui:ui-test-manifest"
     )
   }
 
@@ -326,11 +327,27 @@ object tv extends BaseHiltAndroidModule, AndroidR8AppModule {
     core.data,
     core.designsystem,
     core.domain,
-    core.`domain-testing`
   )
 
 
   override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
+    mvn"androidx.core:core-ktx:1.16.0",
+    mvn"androidx.appcompat:appcompat:1.7.1",
+    mvn"androidx.compose.ui:ui-tooling-preview",
+    mvn"androidx.tv:tv-material:1.0.0",
+    mvn"androidx.lifecycle:lifecycle-runtime-ktx:2.9.1",
+    mvn"androidx.lifecycle:lifecycle-runtime-compose:2.9.1",
+    mvn"androidx.activity:activity-compose:1.10.1",
+    mvn"androidx.navigation:navigation-compose:2.9.0",
+
+    // Hilt
+    mvn"androidx.hilt:hilt-navigation-compose:1.2.0",
+    mvn"com.google.dagger:hilt-android:2.56.2",
+
+    // Media3
+    mvn"androidx.media3:media3-exoplayer:1.7.1",
+    mvn"androidx.media3:media3-session:1.7.1",
+    mvn"androidx.media3:media3-ui-compose:1.7.1",
 
   ) ++ (if (androidIsDebug()) debugMvnDeps() else Seq())
 
@@ -360,39 +377,7 @@ object tv extends BaseHiltAndroidModule, AndroidR8AppModule {
 }
 
 
-object wear extends BaseHiltAndroidModule, AndroidR8AppModule {
-  override def androidApplicationNamespace: String = "com.example.jetcaster"
-
-  override def androidApplicationId: String = "com.example.jetcaster"
-
-  override def androidMinSdk: T[Int] = 26
-
-  override def androidTargetSdk: T[Int] = 34
-
-  def androidEnableCompose: T[Boolean] = true
-
-  def bomMvnDeps: T[Seq[Dep]] = Seq(
-    mvn"androidx.compose:compose-bom-alpha:2025.06.00"
-  )
-
-  def kotlinSymbolProcessors: T[Seq[Dep]] = Seq(
-    mvn"com.google.dagger:hilt-compiler:2.56.2",
-  )
-
-  override def androidDebugSettings: T[AndroidBuildTypeSettings] = Task {
-    AndroidBuildTypeSettings(
-      isMinifyEnabled = false
-    )
-  }
-
-  def androidProjectProguardFiles = Task.Sources(
-    "proguard-rules.pro"
-  )
-
-  def androidDefaultProguardFileNames: Task[Seq[String]] = Task.Anon {
-    Seq("proguard-android-optimize.txt")
-  }
-
+object wear extends BaseJetcasterAppModule {
 
   private def debugMvnDeps: T[Seq[Dep]] = Task {
     Seq(
