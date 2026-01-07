@@ -352,9 +352,9 @@ object tv extends BaseJetcasterAppModule {
     Seq[Regex]("^/META-INF/(AL2.0|LGPL2.1)$".r, "/*.jar".r, "/*.jar".r)
 
   override def androidVirtualDevice = AndroidVirtualDevice(
-    apiVersion = "android-34",
+    apiVersion = "android-33",
     architecture = "x86",
-    deviceId = "tv_720p",
+    deviceId = "tv_1080p",
     systemImageSource = "android-tv"
   )
 
