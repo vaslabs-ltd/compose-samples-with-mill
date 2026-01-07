@@ -354,7 +354,7 @@ object tv extends BaseJetcasterAppModule {
   override def androidVirtualDevice = AndroidVirtualDevice(
     apiVersion = "android-34",
     architecture = "x86",
-    deviceId = "tv_1080p",
+    deviceId = "tv_720p",
     systemImageSource = "android-tv"
   )
 
