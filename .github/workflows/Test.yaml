@@ -50,7 +50,7 @@ jobs:
             app-activity: com.example.jetcaster.ui.MainActivity
           - app: Jetcaster.tv
             app-activity: com.example.jetcaster.tv.MainActivity
-          - app: Jetcaster.tv
+          - app: Jetcaster.wear
             app-activity: com.example.jetcaster.wear.MainActivity
     steps:
       - uses: coursier/cache-action@v6
