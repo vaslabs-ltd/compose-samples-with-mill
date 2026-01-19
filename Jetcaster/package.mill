@@ -361,7 +361,7 @@ object tv extends BaseJetcasterAppModule {
 }
 
 
-object wear extends BaseJetcasterAppModule {
+object wear extends BaseJetcasterAppModule { outer =>
 
   override def androidMinSdk: T[Int] = Task {26}
 
@@ -445,6 +445,12 @@ object wear extends BaseJetcasterAppModule {
     override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
       mvn"androidx.compose.ui:ui-test-junit4",
       mvn"org.robolectric:robolectric:4.14.1",
+      mvn"io.github.takahirom.roborazzi:roborazzi:1.48.0",
+      mvn"io.github.takahirom.roborazzi:roborazzi:1.48.0",
+      mvn"io.github.takahirom.roborazzi:roborazzi-compose:1.48.0",
+      mvn"io.github.takahirom.roborazzi:roborazzi-junit-rule:1.48.0",
+      mvn"com.google.android.horologist:horologist-roboscreenshots:0.7.15",
+
       // Resolve conflicts
       mvn"androidx.test.ext:junit:1.2.1".forceVersion(),
       mvn"androidx.test:monitor:1.7.2".forceVersion(),

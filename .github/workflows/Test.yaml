@@ -42,7 +42,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [ Reply.app, Jetcaster.mobile, Jetcaster.tv ]
+        app: [ Reply.app, Jetcaster.mobile, Jetcaster.tv, Jetcaster.wear ]
         include:
           - app: Reply.app
             app-activity: com.example.reply.ui.MainActivity
@@ -50,6 +50,8 @@ jobs:
             app-activity: com.example.jetcaster.ui.MainActivity
           - app: Jetcaster.tv
             app-activity: com.example.jetcaster.tv.MainActivity
+          - app: Jetcaster.tv
+            app-activity: com.example.jetcaster.wear.MainActivity
     steps:
       - uses: coursier/cache-action@v6
       - uses: actions/checkout@v4
