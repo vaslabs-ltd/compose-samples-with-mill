@@ -51,7 +51,7 @@ jobs:
           - app: Jetcaster.tv
             app-activity: com.example.jetcaster.tv.MainActivity
           - app: Jetcaster.wear
-            app-activity: com.example.jetcaster.wear.MainActivity
+            app-activity: .JetcasterWearApplication
     steps:
       - uses: coursier/cache-action@v6
       - uses: actions/checkout@v4
