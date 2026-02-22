@@ -60,3 +60,28 @@ jobs:
         with:
           app-name: ${{ matrix.app }}
           app-activity: ${{ matrix.app-activity }}
+  android-unit-tests:
+    name: Android Unit Tests (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [ Jetcaster.wear ]
+    steps:
+      - uses: coursier/cache-action@v6
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/android-setup
+      - uses: ./.github/actions/mill-android-unit-test
+        with:
+          app-name: ${{ matrix.app }}
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v5
+        if: (!cancelled())
+        with:
+          fail_on_failure: false
+          include_passed: false
+          detailed_summary: true
+          annotate_only: true
+          require_tests: false
+          report_paths: 'out/**/test-report.xml'

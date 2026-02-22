@@ -442,6 +442,8 @@ object wear extends BaseJetcasterAppModule { outer =>
   object test extends AndroidAppKotlinTests, TestModule.Junit4 {
     def junit4Version = "4.13.2"
 
+    override def androidIncludeAndroidResources = true
+
     override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
       mvn"androidx.compose.ui:ui-test-junit4",
       mvn"org.robolectric:robolectric:4.14.1",
