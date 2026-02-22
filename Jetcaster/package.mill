@@ -437,8 +437,6 @@ object wear extends BaseJetcasterAppModule { outer =>
       "-opt-in=com.google.android.horologist.annotations.ExperimentalHorologistApi"
     )
 
-  // FIXME
-  // Currently not working
   object test extends AndroidAppKotlinTests, TestModule.Junit4 {
     def junit4Version = "4.13.2"
 
