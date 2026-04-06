@@ -1,0 +1,58 @@
+name: Custom Mill Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      mill_repo:
+        description: 'Mill repository (e.g. com-lihaoyi/mill)'
+        required: true
+        default: 'com-lihaoyi/mill'
+      mill_branch:
+        description: 'Mill branch (e.g. main)'
+        required: true
+        default: 'main'
+
+jobs:
+  build-mill:
+    name: Build Custom Mill
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Mill
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.inputs.mill_repo || 'com-lihaoyi/mill' }}
+          ref: ${{ github.event.inputs.mill_branch || 'main' }}
+          fetch-depth: 1
+          path: mill
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build Mill Proguard Jar
+        run: ./mill dist.installLocal
+        working-directory: mill
+
+      - name: Prepare Mill Bundle
+        run: |
+          mkdir -p mill-bundle
+          cp mill/mill-proguard.jar mill-bundle/
+          
+          # Bundle ~/.ivy2 and ~/.cache directories
+          tar -czf mill-bundle/mill-cache.tar.gz -C "$HOME" .ivy2 .cache/mill .cache/coursier || true
+        shell: bash
+
+      - name: Upload Mill Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: mill-custom-bundle
+          path: mill-bundle/
+          if-no-files-found: error
+
+  run-tests:
+    needs: build-mill
+    uses: ./.github/workflows/_run-tests.yaml
+    with:
+      use_custom_mill: true
