@@ -41,7 +41,7 @@ jobs:
           cp mill/mill-proguard.jar mill-bundle/
           
           # Bundle ~/.ivy2 and ~/.cache directories
-          tar -czf mill-bundle/mill-cache.tar.gz -C "$HOME" .ivy2 .cache/mill .cache/coursier || true
+          tar -czf mill-bundle/mill-cache.tar.gz -C "$HOME" .ivy2 || true
         shell: bash
 
       - name: Upload Mill Bundle
