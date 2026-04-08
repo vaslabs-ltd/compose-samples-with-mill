@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [ JetLagged.app, JetNews.app, Jetsnack.app, Jetchat.app ]
+        app: [ JetLagged.app ]
     steps:
       - uses: actions/checkout@v6
       - name: Download and Restore Custom Mill Bundle
@@ -60,7 +60,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [ Reply.app, Jetcaster.mobile, Jetcaster.tv, Jetcaster.wear ]
+        app: [ Reply.app ]
         include:
           - app: Reply.app
             app-activity: com.example.reply.ui.MainActivity

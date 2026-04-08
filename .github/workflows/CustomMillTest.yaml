@@ -1,6 +1,7 @@
 name: Custom Mill Test
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       mill_repo:
