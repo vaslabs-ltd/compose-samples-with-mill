@@ -18,10 +18,10 @@ jobs:
       matrix:
         app: [ JetLagged.app, JetNews.app, Jetsnack.app, Jetchat.app ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Download and Restore Custom Mill Bundle
         if: ${{ inputs.use_custom_mill }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: mill-custom-bundle
           path: mill-bundle
@@ -37,13 +37,13 @@ jobs:
           ln -s "$(pwd)/mill-bundle/mill-proguard.jar" mill
           chmod +x mill
         shell: bash
-      - uses: coursier/cache-action@v6
+      - uses: coursier/cache-action@v8
       - uses: ./.github/actions/android-setup
       - uses: ./.github/actions/mill-android-test
         with:
           app-name: ${{ matrix.app }}
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v5
+        uses: mikepenz/action-junit-report@v6
         if: (!cancelled())
         with:
           fail_on_failure: false
@@ -71,10 +71,10 @@ jobs:
           - app: Jetcaster.wear
             app-activity: .MainActivity
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Download and Restore Custom Mill Bundle
         if: ${{ inputs.use_custom_mill }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: mill-custom-bundle
           path: mill-bundle
@@ -88,7 +88,7 @@ jobs:
           ln -s "$(pwd)/mill-bundle/mill-proguard.jar" mill
           chmod +x mill
         shell: bash
-      - uses: coursier/cache-action@v6
+      - uses: coursier/cache-action@v8
       - uses: ./.github/actions/android-setup
       - uses: ./.github/actions/mill-android-run-apps
         with:
@@ -104,10 +104,10 @@ jobs:
       matrix:
         app: [ Jetcaster.wear ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Download and Restore Custom Mill Bundle
         if: ${{ inputs.use_custom_mill }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: mill-custom-bundle
           path: mill-bundle
@@ -121,13 +121,13 @@ jobs:
           ln -s "$(pwd)/mill-bundle/mill-proguard.jar" mill
           chmod +x mill
         shell: bash
-      - uses: coursier/cache-action@v6
+      - uses: coursier/cache-action@v8
       - uses: ./.github/actions/android-setup
       - uses: ./.github/actions/mill-android-unit-test
         with:
           app-name: ${{ matrix.app }}
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v5
+        uses: mikepenz/action-junit-report@v6
         if: (!cancelled())
         with:
           fail_on_failure: false

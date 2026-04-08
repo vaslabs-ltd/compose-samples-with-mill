@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Mill
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.event.inputs.mill_repo || 'com-lihaoyi/mill' }}
           ref: ${{ github.event.inputs.mill_branch || 'main' }}
@@ -26,7 +26,7 @@ jobs:
           path: mill
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -45,7 +45,7 @@ jobs:
         shell: bash
 
       - name: Upload Mill Bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mill-custom-bundle
           path: mill-bundle/
