@@ -1,0 +1,31 @@
+name: "Setup Environment"
+description: "Checkout code and setup Mill/Android environment"
+inputs:
+  use_custom_mill:
+    description: "Whether to use custom Mill"
+    required: false
+    default: "false"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Download and Restore Custom Mill Bundle
+      if: ${{ inputs.use_custom_mill == 'true' }}
+      uses: actions/download-artifact@v8
+      with:
+        name: mill-custom-bundle
+        path: mill-bundle
+
+    - name: Setup Custom Mill
+      if: ${{ inputs.use_custom_mill == 'true' }}
+      run: |
+        if [ -f mill-bundle/mill-cache.tar.gz ]; then
+          tar -xzf mill-bundle/mill-cache.tar.gz -C "$HOME"
+        fi
+        rm -f mill
+        ln -s "$(pwd)/mill-bundle/mill-proguard.jar" mill
+        chmod +x mill
+      shell: bash
+
+    - uses: coursier/cache-action@v8
+    - uses: ./.github/actions/android-setup

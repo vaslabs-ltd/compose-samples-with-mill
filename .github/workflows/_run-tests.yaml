@@ -19,39 +19,14 @@ jobs:
         app: [ JetLagged.app, JetNews.app, Jetsnack.app, Jetchat.app ]
     steps:
       - uses: actions/checkout@v6
-      - name: Download and Restore Custom Mill Bundle
-        if: ${{ inputs.use_custom_mill }}
-        uses: actions/download-artifact@v8
+      - uses: ./.github/actions/setup-environment
         with:
-          name: mill-custom-bundle
-          path: mill-bundle
-      - name: Setup Custom Mill
-        if: ${{ inputs.use_custom_mill }}
-        run: |
-          # Restore cache from bundle
-          if [ -f mill-bundle/mill-cache.tar.gz ]; then
-            tar -xzf mill-bundle/mill-cache.tar.gz -C "$HOME"
-          fi
-          # Replace mill with link to the custom jar
-          rm -f mill
-          ln -s "$(pwd)/mill-bundle/mill-proguard.jar" mill
-          chmod +x mill
-        shell: bash
-      - uses: coursier/cache-action@v8
-      - uses: ./.github/actions/android-setup
+          use_custom_mill: ${{ inputs.use_custom_mill }}
       - uses: ./.github/actions/mill-android-test
         with:
           app-name: ${{ matrix.app }}
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v6
+      - uses: ./.github/actions/publish-report
         if: (!cancelled())
-        with:
-          fail_on_failure: false
-          include_passed: false
-          detailed_summary: true
-          annotate_only: true
-          require_tests: false
-          report_paths: 'out/**/test-report.xml'
 
   android-run-app:
     name: Android Tests (${{ matrix.app }})
@@ -72,24 +47,9 @@ jobs:
             app-activity: .MainActivity
     steps:
       - uses: actions/checkout@v6
-      - name: Download and Restore Custom Mill Bundle
-        if: ${{ inputs.use_custom_mill }}
-        uses: actions/download-artifact@v8
+      - uses: ./.github/actions/setup-environment
         with:
-          name: mill-custom-bundle
-          path: mill-bundle
-      - name: Setup Custom Mill
-        if: ${{ inputs.use_custom_mill }}
-        run: |
-          if [ -f mill-bundle/mill-cache.tar.gz ]; then
-            tar -xzf mill-bundle/mill-cache.tar.gz -C "$HOME"
-          fi
-          rm -f mill
-          ln -s "$(pwd)/mill-bundle/mill-proguard.jar" mill
-          chmod +x mill
-        shell: bash
-      - uses: coursier/cache-action@v8
-      - uses: ./.github/actions/android-setup
+          use_custom_mill: ${{ inputs.use_custom_mill }}
       - uses: ./.github/actions/mill-android-run-apps
         with:
           app-name: ${{ matrix.app }}
@@ -105,34 +65,11 @@ jobs:
         app: [ Jetcaster.wear ]
     steps:
       - uses: actions/checkout@v6
-      - name: Download and Restore Custom Mill Bundle
-        if: ${{ inputs.use_custom_mill }}
-        uses: actions/download-artifact@v8
+      - uses: ./.github/actions/setup-environment
         with:
-          name: mill-custom-bundle
-          path: mill-bundle
-      - name: Setup Custom Mill
-        if: ${{ inputs.use_custom_mill }}
-        run: |
-          if [ -f mill-bundle/mill-cache.tar.gz ]; then
-            tar -xzf mill-bundle/mill-cache.tar.gz -C "$HOME"
-          fi
-          rm -f mill
-          ln -s "$(pwd)/mill-bundle/mill-proguard.jar" mill
-          chmod +x mill
-        shell: bash
-      - uses: coursier/cache-action@v8
-      - uses: ./.github/actions/android-setup
+          use_custom_mill: ${{ inputs.use_custom_mill }}
       - uses: ./.github/actions/mill-android-unit-test
         with:
           app-name: ${{ matrix.app }}
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v6
+      - uses: ./.github/actions/publish-report
         if: (!cancelled())
-        with:
-          fail_on_failure: false
-          include_passed: false
-          detailed_summary: true
-          annotate_only: true
-          require_tests: false
-          report_paths: 'out/**/test-report.xml'

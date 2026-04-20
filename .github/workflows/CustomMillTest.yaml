@@ -1,4 +1,5 @@
 name: Custom Mill Test
+run-name: Custom Mill (${{ inputs.mill_repo }}:${{ inputs.mill_ref }})
 
 on:
   workflow_dispatch:
@@ -7,8 +8,8 @@ on:
         description: 'Mill repository (e.g. com-lihaoyi/mill)'
         required: true
         default: 'com-lihaoyi/mill'
-      mill_branch:
-        description: 'Mill branch (e.g. main)'
+      mill_ref:
+        description: 'Mill ref: branch, tag, or commit SHA (e.g. main, v0.11.0, 1a2b3c4)'
         required: true
         default: 'main'
 
@@ -17,11 +18,18 @@ jobs:
     name: Build Custom Mill
     runs-on: ubuntu-latest
     steps:
+      - name: Workflow Summary
+        run: |
+          echo "### Custom Mill Build Configuration" >> $GITHUB_STEP_SUMMARY
+          echo "- **Repository**: ${{ inputs.mill_repo }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Ref**: ${{ inputs.mill_ref }}" >> $GITHUB_STEP_SUMMARY
+        shell: bash
+
       - name: Checkout Mill
         uses: actions/checkout@v6
         with:
-          repository: ${{ github.event.inputs.mill_repo || 'com-lihaoyi/mill' }}
-          ref: ${{ github.event.inputs.mill_branch || 'main' }}
+          repository: ${{ inputs.mill_repo || 'com-lihaoyi/mill' }}
+          ref: ${{ inputs.mill_ref || 'main' }}
           fetch-depth: 1
           path: mill
 
