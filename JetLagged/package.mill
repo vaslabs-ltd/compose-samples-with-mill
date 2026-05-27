@@ -74,7 +74,7 @@ object app extends BaseAndroidModule, AndroidR8AppModule {
 
   def androidEnableCompose = true
 
-  override def kotlinUseEmbeddableCompiler: Task[Boolean] = Task {
+  override def kotlinUseEmbeddableCompiler: T[Boolean] = Task {
     true
   }
 
@@ -89,7 +89,7 @@ object app extends BaseAndroidModule, AndroidR8AppModule {
     override def androidEnableCompose = true
 
     // TODO consider defaulting this to the parent app value
-    override def kotlinUseEmbeddableCompiler: Task[Boolean] = Task {
+    override def kotlinUseEmbeddableCompiler: T[Boolean] = Task {
       true
     }
 

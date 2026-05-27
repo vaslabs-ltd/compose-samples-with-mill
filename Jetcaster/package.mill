@@ -33,18 +33,13 @@ trait BaseAndroidModule extends AndroidKotlinModule {
 
   def androidMinSdk = Versions.androidMinSdk
 
-
-  override def androidMergeableManifests: Task[Seq[PathRef]] = Task {
-    androidUnpackRunArchives().flatMap(_.manifest) ++ androidDirectModuleDepsManifests()
-  }
-
 }
 
 trait BaseHiltAndroidModule extends BaseAndroidModule, AndroidHiltSupport {
   def kspVersion = Versions.kspVersion
   def kspJvmTarget = "17"
 
-  override def kotlinUseEmbeddableCompiler: Task[Boolean] = Task {
+  override def kotlinUseEmbeddableCompiler: T[Boolean] = Task {
     true
   }
 }
