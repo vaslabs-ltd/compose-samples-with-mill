@@ -13,9 +13,9 @@ import java.nio.file.Files
 
 object app extends BaseAndroidModule, AndroidR8AppModule {
 
-  override def androidApplicationNamespace: String = "com.example.compose.jetchat"
+  override def androidApplicationNamespace = "com.example.compose.jetchat"
 
-  override def androidApplicationId: String = "com.example.compose.jetchat"
+  override def androidApplicationId = "com.example.compose.jetchat"
 
   override def bomMvnDeps: T[Seq[Dep]] = Seq(
     mvn"androidx.compose:compose-bom:2025.08.00"
