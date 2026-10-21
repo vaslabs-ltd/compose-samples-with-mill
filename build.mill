@@ -1,5 +1,5 @@
 //| mill-jvm-version: zulu:21
-//| mill-version: 2.0.0-M2
+//| mill-version: 1.4.0-M0-1-131925
 package build
 import mill.*, androidlib.*, kotlinlib.*
 
