@@ -16,9 +16,9 @@ object app extends BaseAndroidModule, AndroidR8AppModule {
     "proguard-rules.pro"
   )
 
-  override def androidApplicationNamespace: String = "com.example.jetsnack"
+  override def androidApplicationNamespace = "com.example.jetsnack"
 
-  override def androidApplicationId: String = "com.example.jetsnack"
+  override def androidApplicationId = "com.example.jetsnack"
 
   override def bomMvnDeps: T[Seq[Dep]] = super.bomMvnDeps() ++ Seq(
     mvn"androidx.compose:compose-bom:2025.08.00"

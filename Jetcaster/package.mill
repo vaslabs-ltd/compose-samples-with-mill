@@ -47,7 +47,7 @@ trait BaseHiltAndroidModule extends BaseAndroidModule, AndroidHiltSupport {
 
 object core extends mill.api.Module {
   object data extends BaseHiltAndroidModule {
-    override def androidNamespace: String = "com.example.jetcaster.core.data"
+    override def androidNamespace = "com.example.jetcaster.core.data"
 
     def androidEnableCompose: T[Boolean] = true
 
@@ -77,7 +77,7 @@ object core extends mill.api.Module {
   }
 
   object `data-testing` extends BaseAndroidModule {
-    override def androidNamespace: String = "com.example.jetcaster.core.data.testing"
+    override def androidNamespace = "com.example.jetcaster.core.data.testing"
 
     override def mvnDeps: T[Seq[Dep]] = super.mvnDeps() ++ Seq(
       mvn"androidx.core:core-ktx:1.16.0"
@@ -90,7 +90,7 @@ object core extends mill.api.Module {
 
   object designsystem extends BaseAndroidModule {
 
-    override def androidNamespace: String = "com.example.jetcaster.core.designsystem"
+    override def androidNamespace = "com.example.jetcaster.core.designsystem"
 
     def androidEnableCompose: T[Boolean] = true
 
@@ -111,7 +111,7 @@ object core extends mill.api.Module {
   }
 
   object domain extends BaseHiltAndroidModule {
-    override def androidNamespace: String = "com.example.jetcaster.core.domain"
+    override def androidNamespace = "com.example.jetcaster.core.domain"
 
     def kotlinSymbolProcessors: T[Seq[Dep]] = Seq(
       mvn"com.google.dagger:hilt-compiler:2.56.2",
@@ -136,7 +136,7 @@ object core extends mill.api.Module {
   }
 
   object `domain-testing` extends BaseAndroidModule {
-    override def androidNamespace: String = "com.example.jetcaster.core.domain.testing"
+    override def androidNamespace = "com.example.jetcaster.core.domain.testing"
 
     override def moduleDeps = super.moduleDeps ++ Seq(
       core.domain
@@ -147,7 +147,7 @@ object core extends mill.api.Module {
 
 object glancewidget extends BaseAndroidModule {
 
-  override def androidNamespace: String = "com.example.jetcaster.glancewidget"
+  override def androidNamespace = "com.example.jetcaster.glancewidget"
 
   def androidEnableCompose: T[Boolean] = true
 
@@ -184,9 +184,9 @@ object glancewidget extends BaseAndroidModule {
 }
 
 trait BaseJetcasterAppModule extends BaseHiltAndroidModule, AndroidAppKotlinModule, AndroidR8AppModule {
-  override def androidApplicationNamespace: String = "com.example.jetcaster"
+  override def androidApplicationNamespace = "com.example.jetcaster"
 
-  override def androidApplicationId: String = "com.example.jetcaster"
+  override def androidApplicationId = "com.example.jetcaster"
 
   def androidEnableCompose: T[Boolean] = true
 
@@ -305,7 +305,7 @@ object mobile extends BaseJetcasterAppModule {
 
 object tv extends BaseJetcasterAppModule {
 
-  override def androidApplicationNamespace: String = "com.example.jetcaster.tv"
+  override def androidApplicationNamespace = "com.example.jetcaster.tv"
 
   private def debugMvnDeps: T[Seq[Dep]] = Task {
     Seq(
