@@ -425,6 +425,13 @@ object wear extends BaseJetcasterAppModule { outer =>
     systemImageSource = "android-wear"
   )
 
+  // FIXME: make createAndroidVirtualDevice depend on emulatorExe() so that it is run first. Right now, most examples worked because most avds declare their emulator as a dependency, but the wear system image doesn't.
+  // The wear system image doesn't pull in the emulator package, which avdmanager requires
+  override def createAndroidVirtualDevice() = Task.Command(exclusive = true) {
+    androidSdkModule().emulatorExe()
+    super.createAndroidVirtualDevice()()
+  }
+
   override def kotlincOptions: T[Seq[String]] =
     super.kotlincOptions()
     ++ Seq(
